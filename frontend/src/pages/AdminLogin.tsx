@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
 interface AdminLoginProps {
   setIsAuthenticated: (value: boolean) => void
 }
@@ -22,7 +24,7 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         username,
         password,
       })

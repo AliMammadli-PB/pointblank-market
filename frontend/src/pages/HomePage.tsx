@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
 interface Account {
   id: number
   name: string
@@ -30,7 +32,7 @@ function HomePage() {
   const handleRubleClick = async () => {
     setLoading(true)
     try {
-      const response = await axios.get('/api/settings')
+      const response = await axios.get(`${API_URL}/api/settings`)
       setRubleRate(response.data.rubleRate)
       setView('ruble')
     } catch (error) {
@@ -42,7 +44,7 @@ function HomePage() {
   const handleAccountsClick = async () => {
     setLoading(true)
     try {
-      const response = await axios.get('/api/accounts')
+      const response = await axios.get(`${API_URL}/api/accounts`)
       setAccounts(response.data)
       setView('accounts')
     } catch (error) {

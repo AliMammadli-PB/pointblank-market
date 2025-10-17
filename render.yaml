@@ -1,0 +1,29 @@
+services:
+  # Backend Service
+  - type: web
+    name: pointblank-backend
+    env: node
+    region: frankfurt
+    buildCommand: cd backend && npm install && npx prisma generate && npx prisma db push
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+    
+  # Frontend Service (Static Site)
+  - type: web
+    name: pointblank-frontend
+    env: static
+    region: frankfurt
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://pointblank-backend.onrender.com
+

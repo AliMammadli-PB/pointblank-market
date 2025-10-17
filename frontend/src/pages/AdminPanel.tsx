@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
 interface AdminPanelProps {
   setIsAuthenticated: (value: boolean) => void
 }
@@ -60,7 +62,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
 
   const loadRubleRate = async () => {
     try {
-      const response = await axios.get('/api/settings')
+      const response = await axios.get(`${API_URL}/api/settings`)
       setRubleRate(response.data.rubleRate.toString())
     } catch (error) {
       console.error('Xəta:', error)
@@ -74,7 +76,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
 
     try {
       await axios.put(
-        '/api/settings',
+        `${API_URL}/api/settings`,
         { rubleRate: parseFloat(rubleRate) },
         getAuthHeaders()
       )
@@ -90,7 +92,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const loadAccounts = async () => {
     setAccountsLoading(true)
     try {
-      const response = await axios.get('/api/accounts')
+      const response = await axios.get(`${API_URL}/api/accounts`)
       setAccounts(response.data)
     } catch (error) {
       console.error('Xəta:', error)
@@ -104,12 +106,12 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     try {
       if (editingAccount) {
         await axios.put(
-          `/api/accounts/${editingAccount.id}`,
+          `${API_URL}/api/accounts/${editingAccount.id}`,
           formData,
           getAuthHeaders()
         )
       } else {
-        await axios.post('/api/accounts', formData, getAuthHeaders())
+        await axios.post(`${API_URL}/api/accounts`, formData, getAuthHeaders())
       }
 
       setFormData({ name: '', description: '', rank: '', price: '', youtubeUrl: '' })
@@ -137,7 +139,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     if (!confirm(t('admin.panel.deleteConfirm'))) return
 
     try {
-      await axios.delete(`/api/accounts/${id}`, getAuthHeaders())
+      await axios.delete(`${API_URL}/api/accounts/${id}`, getAuthHeaders())
       loadAccounts()
     } catch (error) {
       console.error('Xəta:', error)
