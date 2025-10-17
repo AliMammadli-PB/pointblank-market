@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id              Int      @id @default(autoincrement())
+  rubleRate       Float    @default(1.0)
+  updatedAt       DateTime @updatedAt
+}
+
+model Account {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  rank        String
+  price       Float
+  youtubeUrl  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
