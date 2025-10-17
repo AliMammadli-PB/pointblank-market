@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || ''
 
 interface AdminPanelProps {
   setIsAuthenticated: (value: boolean) => void

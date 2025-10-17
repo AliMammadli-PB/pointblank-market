@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -13,11 +18,16 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL || 'https://pointblank-frontend.onrender.com']
+    ? [process.env.FRONTEND_URL || '*']
     : ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true
 }));
 app.use(express.json());
+
+// Serve static files from frontend dist folder
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'dist')));
+}
 
 // Auth middleware
 const authenticateToken = (req, res, next) => {
@@ -37,62 +47,54 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Initialize default admin and settings
+// Database initialization
 async function initializeDatabase() {
   try {
-    // Check if admin exists
-    const adminExists = await prisma.admin.findFirst();
-    if (!adminExists) {
+    // Create settings if not exists
+    const settings = await prisma.settings.findFirst();
+    if (!settings) {
+      await prisma.settings.create({
+        data: { rubleRate: 50.0 }
+      });
+      console.log('Settings yaradıldı');
+    }
+
+    // Create admin user if not exists
+    const adminUser = await prisma.admin.findFirst();
+    if (!adminUser) {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       await prisma.admin.create({
         data: {
           username: 'admin',
-          password: hashedPassword,
-        },
+          password: hashedPassword
+        }
       });
-      console.log('Default admin created: username=admin, password=admin123');
-    }
-
-    // Check if settings exists
-    const settingsExists = await prisma.settings.findFirst();
-    if (!settingsExists) {
-      await prisma.settings.create({
-        data: {
-          rubleRate: 1.0,
-        },
-      });
-      console.log('Default settings created');
+      console.log('Admin istifadəçisi yaradıldı: admin / admin123');
     }
   } catch (error) {
-    console.error('Database initialization error:', error);
+    console.error('Database başlatma xətası:', error);
   }
 }
+
+// API Routes
 
 // Auth routes
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const admin = await prisma.admin.findUnique({
-      where: { username },
-    });
-
+    const admin = await prisma.admin.findUnique({ where: { username } });
     if (!admin) {
-      return res.status(401).json({ error: 'İstifadəçi adı və ya şifrə yanlışdır' });
+      return res.status(401).json({ error: 'İstifadəçi tapılmadı' });
     }
 
-    const validPassword = await bcrypt.compare(password, admin.password);
-    if (!validPassword) {
-      return res.status(401).json({ error: 'İstifadəçi adı və ya şifrə yanlışdır' });
+    const isValidPassword = await bcrypt.compare(password, admin.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Şifrə yanlışdır' });
     }
 
-    const token = jwt.sign(
-      { id: admin.id, username: admin.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({ token, username: admin.username });
+    const token = jwt.sign({ id: admin.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token });
   } catch (error) {
     res.status(500).json({ error: 'Server xətası' });
   }
@@ -102,7 +104,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/settings', async (req, res) => {
   try {
     const settings = await prisma.settings.findFirst();
-    res.json(settings || { rubleRate: 1.0 });
+    res.json(settings || { rubleRate: 0 });
   } catch (error) {
     res.status(500).json({ error: 'Server xətası' });
   }
@@ -112,30 +114,29 @@ app.put('/api/settings', authenticateToken, async (req, res) => {
   try {
     const { rubleRate } = req.body;
     
-    let settings = await prisma.settings.findFirst();
-    
-    if (!settings) {
-      settings = await prisma.settings.create({
-        data: { rubleRate },
-      });
-    } else {
-      settings = await prisma.settings.update({
+    const settings = await prisma.settings.findFirst();
+    if (settings) {
+      const updated = await prisma.settings.update({
         where: { id: settings.id },
-        data: { rubleRate },
+        data: { rubleRate: parseFloat(rubleRate) }
       });
+      res.json(updated);
+    } else {
+      const created = await prisma.settings.create({
+        data: { rubleRate: parseFloat(rubleRate) }
+      });
+      res.json(created);
     }
-
-    res.json(settings);
   } catch (error) {
     res.status(500).json({ error: 'Server xətası' });
   }
 });
 
-// Account routes
+// Accounts routes
 app.get('/api/accounts', async (req, res) => {
   try {
     const accounts = await prisma.account.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(accounts);
   } catch (error) {
@@ -146,19 +147,19 @@ app.get('/api/accounts', async (req, res) => {
 app.post('/api/accounts', authenticateToken, async (req, res) => {
   try {
     const { name, description, rank, price, youtubeUrl } = req.body;
-
+    
     const account = await prisma.account.create({
       data: {
         name,
         description,
         rank,
         price: parseFloat(price),
-        youtubeUrl,
-      },
+        youtubeUrl
+      }
     });
-
     res.json(account);
   } catch (error) {
+    console.error('Hesab yaratma xətası:', error);
     res.status(500).json({ error: 'Server xətası' });
   }
 });
@@ -167,7 +168,7 @@ app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, rank, price, youtubeUrl } = req.body;
-
+    
     const account = await prisma.account.update({
       where: { id: parseInt(id) },
       data: {
@@ -175,10 +176,9 @@ app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
         description,
         rank,
         price: parseFloat(price),
-        youtubeUrl,
-      },
+        youtubeUrl
+      }
     });
-
     res.json(account);
   } catch (error) {
     res.status(500).json({ error: 'Server xətası' });
@@ -188,22 +188,23 @@ app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
 app.delete('/api/accounts/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-
     await prisma.account.delete({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id) }
     });
-
-    res.json({ message: 'Hesab silindi' });
+    res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Server xətası' });
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK' });
-});
+// Serve frontend for all other routes (in production)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
 
+// Start server
 app.listen(PORT, async () => {
   console.log(`Server ${PORT} portunda işləyir`);
   await initializeDatabase();

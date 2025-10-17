@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || ''
 
 interface Account {
   id: number
