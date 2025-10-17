@@ -70,8 +70,8 @@ Sağ üstteki dil seçici butonlardan dilini değiştirebilirsiniz. Seçilen dil
 ### Admin Paneli
 
 - Admin girişi: http://localhost:3000/admin/login
-- Varsayılan kullanıcı adı: `admin`
-- Varsayılan şifre: `admin123`
+- Varsayılan kullanıcı adı: `Admin`
+- Varsayılan şifre: `Ehmed2025%%%%%`
 
 Admin panelinde:
 - Rubl fiyatını güncelleyebilirsiniz (1 Manat = ? Rubl)
@@ -95,7 +95,7 @@ Kullanıcılar hem rubl satın alabilir hem de hesap satın alabilir. Satın Al 
 - Hesab emaili
 - Dekont URL'si istenir
 
-Form doldurulduktan sonra WhatsApp'a (+994123456789) otomatik olarak mesaj gönderilir.
+Form doldurulduktan sonra WhatsApp'a (+79271031033) otomatik olarak mesaj gönderilir.
 
 ## Teknolojiler
 

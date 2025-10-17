@@ -57,8 +57,8 @@ Deploy tamamlandıktan sonra:
 1. Site URL'niz: `https://pointblank-market.onrender.com`
 2. Admin girişi: `https://pointblank-market.onrender.com/admin/login`
 3. Varsayılan kullanıcı:
-   - **Username:** `admin`
-   - **Password:** `admin123`
+   - **Username:** `Admin`
+   - **Password:** `Ehmed2025%%%%%`
 
 ⚠️ **İlk giriş yaptıktan sonra şifreyi değiştirin!**
 

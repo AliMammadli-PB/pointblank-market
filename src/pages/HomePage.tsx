@@ -68,7 +68,7 @@ function HomePage() {
       `*Qiymət:* ${account.price} Manat\n` +
       `*Video:* ${account.youtubeUrl}`
     
-    const whatsappUrl = `https://wa.me/994553474687?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
 
@@ -83,7 +83,7 @@ function HomePage() {
       `*Rubl Sayı:* ${rubleForm.rubleAmount}\n` +
       `*Çek:* ${rubleForm.receiptUrl}`
     
-    const whatsappUrl = `https://wa.me/994553474687?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
     setShowRubleModal(false)
     setRubleForm({ nickname: '', email: '', rubleAmount: '', receiptUrl: '' })

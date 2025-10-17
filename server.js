@@ -68,14 +68,14 @@ async function initializeDatabase() {
     // Create admin user if not exists
     const adminUser = await prisma.admin.findFirst();
     if (!adminUser) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash('Ehmed2025%%%%%', 10);
       await prisma.admin.create({
         data: {
-          username: 'admin',
+          username: 'Admin',
           password: hashedPassword
         }
       });
-      console.log('Admin istifadəçisi yaradıldı: admin / admin123');
+      console.log('Admin istifadəçisi yaradıldı: Admin / Ehmed2025%%%%%');
     }
   } catch (error) {
     console.error('Database başlatma xətası:', error);
