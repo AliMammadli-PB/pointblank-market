@@ -1,16 +1,29 @@
 {
-  "name": "frontend",
-  "private": true,
-  "version": "0.0.0",
+  "name": "pointblank-market",
+  "version": "1.0.0",
+  "description": "PointBlank Market - Full Stack Application",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "nodemon server.js",
+    "client:dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "start": "node server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "postinstall": "prisma generate"
   },
+  "keywords": ["pointblank", "market"],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.17.1",
     "axios": "^1.6.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1"
@@ -20,6 +33,8 @@
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2",
     "postcss": "^8.4.32",
     "prisma": "^6.17.1",
     "tailwindcss": "^3.3.6",
