@@ -293,7 +293,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
 
                   <div>
                     <label className="block text-gray-300 mb-2">Rütbə GIF</label>
-                    <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto bg-gray-900/50 border border-gray-700 rounded-lg p-3">
+                    <div className="grid grid-cols-8 gap-2 max-h-32 overflow-y-auto bg-gray-900/50 border border-gray-700 rounded-lg p-3">
                       {rankGifs.map((gif) => (
                         <div key={gif} className="relative">
                           <input
@@ -316,7 +316,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                             <img
                               src={`/assets/rutbe/${gif}`}
                               alt={`Rank ${gif}`}
-                              className="w-full h-12 object-cover rounded"
+                              className="w-full h-8 object-cover rounded"
                             />
                             <div className="text-xs text-center text-gray-400 mt-1">
                               {gif.replace('.gif', '')}
@@ -390,11 +390,10 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                         <div className="flex items-center gap-2">
                           <span className="text-neon-blue text-sm">🏆 Rütbə:</span>
                           <img 
-                            src={`/src/assets/rutbe/${account.rankGif}`}
+                            src={`/assets/rutbe/${account.rankGif}`}
                             alt={`Rank ${account.rankGif}`}
                             className="w-8 h-8 object-cover rounded"
                           />
-                          <span className="text-white text-sm font-semibold">{account.rankGif.replace('.gif', '')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-neon-green text-sm">💰 {t('accounts.price')}:</span>

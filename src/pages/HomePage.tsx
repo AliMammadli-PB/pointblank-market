@@ -217,7 +217,6 @@ function HomePage() {
                             alt={`Rank ${account.rankGif}`}
                             className="w-8 h-8 object-cover rounded"
                           />
-                          <span className="text-white font-semibold">{account.rankGif.replace('.gif', '')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-neon-green">💰 {t('accounts.price')}:</span>
