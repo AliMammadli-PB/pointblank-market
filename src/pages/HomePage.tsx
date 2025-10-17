@@ -140,12 +140,6 @@ function HomePage() {
               </button>
             </div>
 
-            <a
-              href="/admin/login"
-              className="mt-8 text-sm text-gray-500 hover:text-neon-purple transition-colors"
-            >
-              {t('home.adminLogin')}
-            </a>
           </div>
         )}
 

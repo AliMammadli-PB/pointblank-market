@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
@@ -14,13 +14,34 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
   const { t } = useLanguage()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [captcha, setCaptcha] = useState('')
+  const [captchaInput, setCaptchaInput] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Generate 6-digit random captcha
+  const generateCaptcha = () => {
+    const randomNum = Math.floor(100000 + Math.random() * 900000)
+    setCaptcha(randomNum.toString())
+    setCaptchaInput('')
+  }
+
+  useEffect(() => {
+    generateCaptcha()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    
+    // Validate captcha
+    if (captchaInput !== captcha) {
+      setError('Captcha yanlışdır!')
+      generateCaptcha()
+      return
+    }
+    
     setLoading(true)
 
     try {
@@ -34,6 +55,7 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
       navigate('/admin/panel')
     } catch (error: any) {
       setError(error.response?.data?.error || 'Giriş xətası')
+      generateCaptcha() // Generate new captcha on error
     }
 
     setLoading(false)
@@ -83,6 +105,33 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-300 mb-2">Captcha</label>
+              <div className="flex items-center space-x-3">
+                <div className="flex-1">
+                  <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-3 text-center">
+                    <span className="text-2xl font-bold text-neon-blue select-none">{captcha}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={generateCaptcha}
+                  className="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                  title="Yenile"
+                >
+                  🔄
+                </button>
+              </div>
+              <input
+                type="text"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors mt-2"
+                placeholder="Captcha kodunu girin"
                 required
               />
             </div>
