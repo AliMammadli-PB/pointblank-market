@@ -9,7 +9,7 @@ interface Account {
   id: number
   name: string
   description: string
-  rank: string
+  rankGif: string
   price: number
   youtubeUrl: string
 }
@@ -64,7 +64,7 @@ function HomePage() {
   const handleBuyClick = (account: Account) => {
     const message = `*Yeni Satınalma Tələbi*\n\n` +
       `*Hesab:* ${account.name}\n` +
-      `*Rütbə:* ${account.rank}\n` +
+      `*Rütbə:* ${account.rankGif.replace('.gif', '')}\n` +
       `*Qiymət:* ${account.price} Manat\n` +
       `*Video:* ${account.youtubeUrl}`
     
@@ -211,8 +211,13 @@ function HomePage() {
                       
                       <div className="mb-4 space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-neon-blue">🏆 {t('accounts.rank')}:</span>
-                          <span className="text-white font-semibold">{account.rank}</span>
+                          <span className="text-neon-blue">🏆 Rütbə:</span>
+                          <img 
+                            src={`/assets/rutbe/${account.rankGif}`}
+                            alt={`Rank ${account.rankGif}`}
+                            className="w-8 h-8 object-cover rounded"
+                          />
+                          <span className="text-white font-semibold">{account.rankGif.replace('.gif', '')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-neon-green">💰 {t('accounts.price')}:</span>

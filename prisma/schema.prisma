@@ -22,7 +22,7 @@ model Account {
   id          Int      @id @default(autoincrement())
   name        String
   description String
-  rank        String
+  rankGif     String   // Gif dosya adı (örn: "5.gif")
   price       Float
   youtubeUrl  String
   createdAt   DateTime @default(now())

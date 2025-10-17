@@ -152,13 +152,13 @@ app.get('/api/accounts', async (req, res) => {
 
 app.post('/api/accounts', authenticateToken, async (req, res) => {
   try {
-    const { name, description, rank, price, youtubeUrl } = req.body;
+    const { name, description, rankGif, price, youtubeUrl } = req.body;
     
     const account = await prisma.account.create({
       data: {
         name,
         description,
-        rank,
+        rankGif,
         price: parseFloat(price),
         youtubeUrl
       }
@@ -173,14 +173,14 @@ app.post('/api/accounts', authenticateToken, async (req, res) => {
 app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, rank, price, youtubeUrl } = req.body;
+    const { name, description, rankGif, price, youtubeUrl } = req.body;
     
     const account = await prisma.account.update({
       where: { id: parseInt(id) },
       data: {
         name,
         description,
-        rank,
+        rankGif,
         price: parseFloat(price),
         youtubeUrl
       }

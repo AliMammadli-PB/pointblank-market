@@ -14,7 +14,7 @@ interface Account {
   id: number
   name: string
   description: string
-  rank: string
+  rankGif: string
   price: number
   youtubeUrl: string
 }
@@ -23,6 +23,9 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'ruble' | 'accounts'>('ruble')
+  
+  // Available rank gifs (0.gif to 53.gif)
+  const rankGifs = Array.from({ length: 54 }, (_, i) => `${i}.gif`)
   
   // Ruble settings
   const [rubleRate, setRubleRate] = useState('')
@@ -38,7 +41,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    rank: '',
+    rankGif: '0.gif',
     price: '',
     youtubeUrl: '',
   })
@@ -114,7 +117,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         await axios.post(`${API_URL}/api/accounts`, formData, getAuthHeaders())
       }
 
-      setFormData({ name: '', description: '', rank: '', price: '', youtubeUrl: '' })
+      setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '' })
       setShowForm(false)
       setEditingAccount(null)
       loadAccounts()
@@ -128,7 +131,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setFormData({
       name: account.name,
       description: account.description,
-      rank: account.rank,
+      rankGif: account.rankGif,
       price: account.price.toString(),
       youtubeUrl: account.youtubeUrl,
     })
@@ -149,7 +152,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const cancelForm = () => {
     setShowForm(false)
     setEditingAccount(null)
-    setFormData({ name: '', description: '', rank: '', price: '', youtubeUrl: '' })
+    setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '' })
   }
 
   return (
@@ -289,15 +292,39 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                   </div>
 
                   <div>
-                    <label className="block text-gray-300 mb-2">{t('admin.panel.rank')}</label>
-                    <input
-                      type="text"
-                      value={formData.rank}
-                      onChange={(e) => setFormData({ ...formData, rank: e.target.value })}
-                      placeholder={t('admin.panel.rankPlaceholder')}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
-                      required
-                    />
+                    <label className="block text-gray-300 mb-2">Rütbə GIF</label>
+                    <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto bg-gray-900/50 border border-gray-700 rounded-lg p-3">
+                      {rankGifs.map((gif) => (
+                        <div key={gif} className="relative">
+                          <input
+                            type="radio"
+                            id={gif}
+                            name="rankGif"
+                            value={gif}
+                            checked={formData.rankGif === gif}
+                            onChange={(e) => setFormData({ ...formData, rankGif: e.target.value })}
+                            className="sr-only"
+                          />
+                          <label
+                            htmlFor={gif}
+                            className={`block cursor-pointer border-2 rounded p-1 transition-colors ${
+                              formData.rankGif === gif 
+                                ? 'border-neon-blue bg-blue-500/20' 
+                                : 'border-gray-600 hover:border-gray-500'
+                            }`}
+                          >
+                            <img
+                              src={`/assets/rutbe/${gif}`}
+                              alt={`Rank ${gif}`}
+                              className="w-full h-12 object-cover rounded"
+                            />
+                            <div className="text-xs text-center text-gray-400 mt-1">
+                              {gif.replace('.gif', '')}
+                            </div>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div>
@@ -361,8 +388,13 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                       
                       <div className="mb-3 space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-neon-blue text-sm">🏆 {t('accounts.rank')}:</span>
-                          <span className="text-white text-sm font-semibold">{account.rank}</span>
+                          <span className="text-neon-blue text-sm">🏆 Rütbə:</span>
+                          <img 
+                            src={`/src/assets/rutbe/${account.rankGif}`}
+                            alt={`Rank ${account.rankGif}`}
+                            className="w-8 h-8 object-cover rounded"
+                          />
+                          <span className="text-white text-sm font-semibold">{account.rankGif.replace('.gif', '')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-neon-green text-sm">💰 {t('accounts.price')}:</span>
