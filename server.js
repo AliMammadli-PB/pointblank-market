@@ -13,6 +13,12 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
+
+// Ensure DATABASE_URL is set (default for production)
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./prod.db';
+}
+
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3001;
 
