@@ -309,6 +309,88 @@ app.delete('/api/accounts/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Boost Settings routes
+app.get('/api/boost-settings', async (req, res) => {
+  try {
+    console.log('[BOOST] GET - Boost ayarları getiriliyor...');
+    const { data: settings, error } = await supabase
+      .from('BoostSettings')
+      .select('*')
+      .limit(1)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      console.log('[BOOST] ❌ Boost ayarları getirilemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    console.log('[BOOST] ✅ Boost ayarları getirildi:', settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0 });
+    res.json(settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0 });
+  } catch (error) {
+    console.error('[BOOST] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
+app.put('/api/boost-settings', authenticateToken, async (req, res) => {
+  try {
+    const { battlePassPrice, rankPrice, rutbePrice, misyaPrice } = req.body;
+    console.log(`[BOOST] PUT - Boost ayarları güncelleniyor...`);
+    
+    const { data: settings, error: fetchError } = await supabase
+      .from('BoostSettings')
+      .select('*')
+      .limit(1)
+      .single();
+    
+    if (settings) {
+      console.log('[BOOST] Mevcut ayar güncelleniyor...');
+      // Update existing settings
+      const { data: updated, error } = await supabase
+        .from('BoostSettings')
+        .update({
+          battlePassPrice: parseFloat(battlePassPrice),
+          rankPrice: parseFloat(rankPrice),
+          rutbePrice: parseFloat(rutbePrice),
+          misyaPrice: parseFloat(misyaPrice)
+        })
+        .eq('id', settings.id)
+        .select()
+        .single();
+      
+      if (error) {
+        console.log('[BOOST] ❌ Güncelleme hatası:', error.message);
+        return res.status(500).json({ error: 'Server xətası' });
+      }
+      console.log('[BOOST] ✅ Boost ayarları güncellendi:', updated);
+      res.json(updated);
+    } else {
+      console.log('[BOOST] Yeni ayar oluşturuluyor...');
+      // Create new settings
+      const { data: created, error } = await supabase
+        .from('BoostSettings')
+        .insert([{
+          battlePassPrice: parseFloat(battlePassPrice),
+          rankPrice: parseFloat(rankPrice),
+          rutbePrice: parseFloat(rutbePrice),
+          misyaPrice: parseFloat(misyaPrice)
+        }])
+        .select()
+        .single();
+      
+      if (error) {
+        console.log('[BOOST] ❌ Oluşturma hatası:', error.message);
+        return res.status(500).json({ error: 'Server xətası' });
+      }
+      console.log('[BOOST] ✅ Boost ayarları oluşturuldu:', created);
+      res.json(created);
+    }
+  } catch (error) {
+    console.error('[BOOST] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
 // Serve frontend for all other routes (in production)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {

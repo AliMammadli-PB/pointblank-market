@@ -114,7 +114,7 @@ function HomePage() {
               <p className="text-gray-400">{t('home.selectOption')}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
               <button
                 onClick={handleRubleClick}
                 disabled={loading}
@@ -122,10 +122,21 @@ function HomePage() {
               >
                 <div className="text-center">
                   <div className="text-5xl mb-4">💰</div>
-                  <h3 className="text-2xl font-bold text-neon-blue mb-2">{t('home.rublePrice')}</h3>
+                  <h3 className="text-2xl font-bold text-neon-blue mb-2">Rubl</h3>
                   <p className="text-gray-400">{t('home.rublePriceDesc')}</p>
                 </div>
               </button>
+
+              <a
+                href="/boost"
+                className="group relative p-8 bg-gray-800/50 border-2 border-neon-purple/50 rounded-xl hover:border-neon-purple transition-all duration-300 hover:shadow-neon-purple"
+              >
+                <div className="text-center">
+                  <div className="text-5xl mb-4">🚀</div>
+                  <h3 className="text-2xl font-bold text-neon-purple mb-2">Boost</h3>
+                  <p className="text-gray-400">Səviyyə yüksəltmə</p>
+                </div>
+              </a>
 
               <button
                 onClick={handleAccountsClick}
@@ -134,7 +145,7 @@ function HomePage() {
               >
                 <div className="text-center">
                   <div className="text-5xl mb-4">🎮</div>
-                  <h3 className="text-2xl font-bold text-neon-pink mb-2">{t('home.accounts')}</h3>
+                  <h3 className="text-2xl font-bold text-neon-pink mb-2">Hesablar</h3>
                   <p className="text-gray-400">{t('home.accountsDesc')}</p>
                 </div>
               </button>

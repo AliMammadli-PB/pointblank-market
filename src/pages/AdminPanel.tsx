@@ -22,7 +22,7 @@ interface Account {
 function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'ruble' | 'accounts'>('ruble')
+  const [activeTab, setActiveTab] = useState<'ruble' | 'accounts' | 'boost'>('ruble')
   
   // Available rank gifs (0.gif to 53.gif)
   const rankGifs = Array.from({ length: 54 }, (_, i) => `${i}.gif`)
@@ -31,6 +31,16 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const [rubleRate, setRubleRate] = useState('')
   const [rubleLoading, setRubleLoading] = useState(false)
   const [rubleSuccess, setRubleSuccess] = useState(false)
+
+  // Boost settings
+  const [boostSettings, setBoostSettings] = useState({
+    battlePassPrice: '',
+    rankPrice: '',
+    rutbePrice: '',
+    misyaPrice: ''
+  })
+  const [boostLoading, setBoostLoading] = useState(false)
+  const [boostSuccess, setBoostSuccess] = useState(false)
 
   // Accounts
   const [accounts, setAccounts] = useState<Account[]>([])
@@ -49,6 +59,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   useEffect(() => {
     loadRubleRate()
     loadAccounts()
+    loadBoostSettings()
   }, [])
 
   const getAuthHeaders = () => ({
@@ -90,6 +101,45 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     }
 
     setRubleLoading(false)
+  }
+
+  const loadBoostSettings = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/boost-settings`)
+      setBoostSettings({
+        battlePassPrice: response.data.battlePassPrice.toString(),
+        rankPrice: response.data.rankPrice.toString(),
+        rutbePrice: response.data.rutbePrice.toString(),
+        misyaPrice: response.data.misyaPrice.toString()
+      })
+    } catch (error) {
+      console.error('Xəta:', error)
+    }
+  }
+
+  const handleBoostSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBoostLoading(true)
+    setBoostSuccess(false)
+
+    try {
+      await axios.put(
+        `${API_URL}/api/boost-settings`,
+        {
+          battlePassPrice: parseFloat(boostSettings.battlePassPrice),
+          rankPrice: parseFloat(boostSettings.rankPrice),
+          rutbePrice: parseFloat(boostSettings.rutbePrice),
+          misyaPrice: parseFloat(boostSettings.misyaPrice)
+        },
+        getAuthHeaders()
+      )
+      setBoostSuccess(true)
+      setTimeout(() => setBoostSuccess(false), 3000)
+    } catch (error) {
+      console.error('Xəta:', error)
+    }
+
+    setBoostLoading(false)
   }
 
   const loadAccounts = async () => {
@@ -199,6 +249,16 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
             {t('admin.panel.rubleTab')}
           </button>
           <button
+            onClick={() => setActiveTab('boost')}
+            className={`px-6 py-3 font-semibold transition-colors ${
+              activeTab === 'boost'
+                ? 'text-neon-purple border-b-2 border-neon-purple'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Boost Qiymətləri
+          </button>
+          <button
             onClick={() => setActiveTab('accounts')}
             className={`px-6 py-3 font-semibold transition-colors ${
               activeTab === 'accounts'
@@ -241,6 +301,79 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                   className="w-full py-3 bg-gradient-to-r from-neon-blue to-cyan-500 text-white font-bold rounded-lg hover:shadow-neon-blue transition-all duration-300 disabled:opacity-50"
                 >
                   {rubleLoading ? t('admin.panel.updating') : t('common.update')}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Boost Tab */}
+        {activeTab === 'boost' && (
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-gray-800/50 border-2 border-neon-purple/50 rounded-xl p-8">
+              <h2 className="text-2xl font-bold text-white mb-6">🚀 Boost Qiymətləri</h2>
+
+              {boostSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-400 text-sm">
+                  Boost qiymətləri uğurla yeniləndi!
+                </div>
+              )}
+
+              <form onSubmit={handleBoostSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 mb-2">🎯 Battle Pass Qiyməti (Manat)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={boostSettings.battlePassPrice}
+                    onChange={(e) => setBoostSettings({ ...boostSettings, battlePassPrice: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">⭐ Rank Boost Qiyməti (Manat)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={boostSettings.rankPrice}
+                    onChange={(e) => setBoostSettings({ ...boostSettings, rankPrice: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">🎖️ Rütbə Boost Qiyməti (Manat)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={boostSettings.rutbePrice}
+                    onChange={(e) => setBoostSettings({ ...boostSettings, rutbePrice: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">📋 Misya Boost Qiyməti (Manat)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={boostSettings.misyaPrice}
+                    onChange={(e) => setBoostSettings({ ...boostSettings, misyaPrice: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={boostLoading}
+                  className="w-full py-3 bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold rounded-lg hover:shadow-neon-purple transition-all duration-300 disabled:opacity-50"
+                >
+                  {boostLoading ? 'Yenilənir...' : 'Qiymətləri Yenilə'}
                 </button>
               </form>
             </div>
