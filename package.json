@@ -8,16 +8,16 @@
     "server:dev": "nodemon server.js",
     "client:dev": "vite",
     "build": "tsc && vite build",
-    "start": "node server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
-    "postinstall": "prisma generate && prisma db push --accept-data-loss"
+    "start": "node server.js"
   },
-  "keywords": ["pointblank", "market"],
+  "keywords": [
+    "pointblank",
+    "market"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.17.1",
+    "@supabase/supabase-js": "^2.75.0",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -36,7 +36,6 @@
     "concurrently": "^8.2.2",
     "nodemon": "^3.0.2",
     "postcss": "^8.4.32",
-    "prisma": "^6.17.1",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"

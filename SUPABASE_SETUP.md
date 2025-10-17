@@ -1,206 +1,123 @@
-# 🚀 Supabase Kurulum Rehberi
+# 🚀 Supabase Kurulum Talimatları
 
-## 📋 Adım Adım Kurulum
+## Adım 1: Supabase Dashboard'a Giriş
 
-### 1️⃣ Supabase Projesi Oluştur
+1. [Supabase Dashboard](https://app.supabase.com)'a gidin
+2. Projenizi seçin: `https://tqmjhcvlhstrwowskxul.supabase.co`
 
-1. https://supabase.com adresine git
-2. **"Start your project"** butonuna tıkla
-3. GitHub ile giriş yap
-4. **"New project"** oluştur
-5. Proje adı: `pointblank-market`
-6. Database şifresi oluştur (güçlü bir şifre kullan!)
-7. Region seç (Frankfurt önerilir)
+## Adım 2: SQL Editor'da Tabloları Oluşturun
 
-### 2️⃣ Database URL'ini Al
+1. Sol menüden **SQL Editor** sekmesine tıklayın
+2. **New Query** butonuna tıklayın
+3. `SUPABASE_SETUP.sql` dosyasının tüm içeriğini kopyalayıp yapıştırın
+4. **Run** butonuna tıklayın
 
-Supabase dashboard'da:
-1. **Settings** → **Database**
-2. **Connection string** → **URI** seç
-3. URL'yi kopyala (şifre kısmını değiştir)
+SQL scripti şunları oluşturacak:
+- ✅ `Admin` tablosu - Admin kullanıcı bilgileri
+- ✅ `Settings` tablosu - Ruble kur ayarları
+- ✅ `Account` tablosu - Hesap bilgileri
+- ✅ İlk admin kullanıcısı (username: `admin`, password: `admin123`)
+- ✅ Row Level Security politikaları
 
-### 3️⃣ SQL Editor'da Tabloları Oluştur
+## Adım 3: Tabloları Kontrol Edin
 
-1. Supabase dashboard'da **SQL Editor**'a git
-2. **"New query"** oluştur
-3. Aşağıdaki SQL kodunu yapıştır:
+1. Sol menüden **Table Editor** sekmesine tıklayın
+2. Şu tabloları görmelisiniz:
+   - Admin
+   - Settings
+   - Account
 
-```sql
--- PointBlank Market Database Setup for Supabase PostgreSQL
--- Run this in Supabase SQL Editor
-
--- Enable UUID extension (if not already enabled)
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Create Admin table
-CREATE TABLE IF NOT EXISTS "Admin" (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create Settings table
-CREATE TABLE IF NOT EXISTS "Settings" (
-    id SERIAL PRIMARY KEY,
-    "rubleRate" DECIMAL(10,2) NOT NULL DEFAULT 50.0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create Account table
-CREATE TABLE IF NOT EXISTS "Account" (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    "rankGif" VARCHAR(255) NOT NULL DEFAULT '0.gif',
-    price DECIMAL(10,2) NOT NULL,
-    "youtubeUrl" TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_admin_username ON "Admin"(username);
-CREATE INDEX IF NOT EXISTS idx_account_created_at ON "Account"(created_at);
-CREATE INDEX IF NOT EXISTS idx_account_rank_gif ON "Account"("rankGif");
-
--- Insert default admin user (password: Ehmed2025%%%%% hashed with bcrypt)
-INSERT INTO "Admin" (username, password) VALUES 
-('Admin', '$2a$10$rQ8J8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K8K')
-ON CONFLICT (username) DO NOTHING;
-
--- Insert default settings
-INSERT INTO "Settings" ("rubleRate") VALUES (50.0)
-ON CONFLICT DO NOTHING;
-
--- Create function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Create triggers to automatically update updated_at
-CREATE TRIGGER update_admin_updated_at 
-    BEFORE UPDATE ON "Admin" 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_settings_updated_at 
-    BEFORE UPDATE ON "Settings" 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_account_updated_at 
-    BEFORE UPDATE ON "Account" 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Enable Row Level Security (RLS) for better security
-ALTER TABLE "Admin" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Settings" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Account" ENABLE ROW LEVEL SECURITY;
-
--- Create policies for public read access to Settings and Account
-CREATE POLICY "Public read access to Settings" ON "Settings"
-    FOR SELECT USING (true);
-
-CREATE POLICY "Public read access to Account" ON "Account"
-    FOR SELECT USING (true);
-
--- Grant necessary permissions
-GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT SELECT ON "Settings" TO anon, authenticated;
-GRANT SELECT ON "Account" TO anon, authenticated;
-GRANT ALL ON "Admin" TO authenticated;
-
--- Grant sequence permissions for auto-increment
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-```
-
-4. **"Run"** butonuna tıkla
-
-### 4️⃣ Environment Variables Ayarla
-
-Proje klasöründe `.env` dosyası oluştur:
-
-```env
-# Supabase Database Configuration
-DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres"
-
-# Supabase Configuration  
-SUPABASE_URL="https://[YOUR-PROJECT-REF].supabase.co"
-SUPABASE_ANON_KEY="[YOUR-ANON-KEY]"
-
-# Application Configuration
-NODE_ENV=development
-PORT=3001
-JWT_SECRET=your-super-secret-jwt-key-change-in-production-123456
-
-# Frontend API URL (for development)
-VITE_API_URL=http://localhost:3001
-```
-
-**Önemli:** `[YOUR-PASSWORD]`, `[YOUR-PROJECT-REF]`, `[YOUR-ANON-KEY]` kısımlarını gerçek değerlerle değiştir!
-
-### 5️⃣ Supabase Bilgilerini Bul
-
-**Database URL:**
-- Supabase Dashboard → Settings → Database → Connection string → URI
-
-**ANON KEY:**
-- Supabase Dashboard → Settings → API → Project API keys → anon public
-
-### 6️⃣ Prisma Client'ı Güncelle
+## Adım 4: Projeyi Çalıştırın
 
 ```bash
-npx prisma generate
-npx prisma db push
-```
-
-### 7️⃣ Uygulamayı Başlat
-
-```bash
-npm install
+# Development modunda çalıştırma
 npm run dev
+
+# Veya sadece backend
+npm start
 ```
 
-## 🔧 Render.com Deploy
+## 🔑 Varsayılan Admin Girişi
 
-Render'da deploy için:
+- **Kullanıcı Adı:** admin
+- **Şifre:** admin123
 
-### Environment Variables:
+⚠️ **ÖNEMLİ:** İlk girişten sonra admin şifresini değiştirin!
+
+## 🌐 Erişim Linkleri
+
+- **Frontend (Development):** http://localhost:5173
+- **Backend API:** http://localhost:3001
+- **Admin Panel:** http://localhost:5173/admin
+
+## 📝 Ortam Değişkenleri
+
+`.env` dosyası otomatik olarak oluşturuldu:
 ```
-DATABASE_URL=postgresql://postgres:[PASSWORD]@[PROJECT-REF].supabase.co:5432/postgres
-NODE_ENV=production
-PORT=10000
-JWT_SECRET=your-super-secret-jwt-key-change-in-production-123456
+SUPABASE_URL=https://tqmjhcvlhstrwowskxul.supabase.co
+ANON_PUBLIC=***
+JWT_SECRET=***
+PORT=3001
+NODE_ENV=development
 ```
 
-### Build Command:
+## 🔍 Test Etme
+
+### 1. Settings API Test
 ```bash
-yarn && npx prisma generate && npx prisma db push && npx tsc && npx vite build
+curl http://localhost:3001/api/settings
 ```
 
-## ✅ Test
+### 2. Accounts API Test
+```bash
+curl http://localhost:3001/api/accounts
+```
 
-Kurulum tamamlandıktan sonra:
-- **Local:** http://localhost:5173
-- **Admin:** http://localhost:5173/admin/login
-- **Kullanıcı:** `Admin`
-- **Şifre:** `Ehmed2025%%%%%`
+### 3. Admin Login Test
+```bash
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"admin\",\"password\":\"admin123\"}"
+```
 
-## 🐛 Sorun Giderme
+## ⚠️ Sorun Giderme
 
-**Database bağlantı hatası:**
-- DATABASE_URL'deki şifreyi kontrol et
-- Supabase projesinin aktif olduğundan emin ol
+### Supabase bağlantı hatası
+- Supabase URL ve Anon Key'in doğru olduğundan emin olun
+- Supabase projenizin aktif olduğundan emin olun
+- `SUPABASE_SETUP.sql` scriptini çalıştırdığınızdan emin olun
 
-**Permission hatası:**
-- SQL Editor'da tüm kodları çalıştırdığından emin ol
-- RLS policies'lerin doğru oluşturulduğunu kontrol et
+### Admin kullanıcısı bulunamadı hatası
+- SQL Editor'da `SUPABASE_SETUP.sql` scriptini tekrar çalıştırın
+- Table Editor'da `Admin` tablosunda kayıt olup olmadığını kontrol edin
 
-**Admin giriş hatası:**
-- Default admin kullanıcısının oluşturulduğunu kontrol et
-- JWT_SECRET'ın ayarlandığından emin ol
+## 📦 Production Deployment
+
+Production için:
+1. `.env` dosyasında `NODE_ENV=production` yapın
+2. `npm run build` komutuyla frontend'i build edin
+3. `npm start` ile sunucuyu başlatın
+4. Sunucu hem API hem de frontend'i serve edecek
+
+## 🎯 Özet Komutlar
+
+```bash
+# Development
+npm run dev          # Frontend + Backend birlikte
+
+# Production
+npm run build        # Frontend build
+npm start           # Production server
+
+# Backend only
+npm run server:dev   # Backend (development)
+node server.js      # Backend (production)
+
+# Frontend only  
+npm run client:dev   # Frontend (development)
+```
+
+---
+
+✅ Kurulum tamamlandı! Artık projeniz tamamen Supabase ile çalışıyor.
+
