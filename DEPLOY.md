@@ -26,7 +26,7 @@ Artık **tek klasör** yapısı var:
 - **Runtime:** Node
 - **Build Command:** 
   ```bash
-  npm install && npx prisma generate && npx prisma db push && npm run build
+  yarn && npx prisma generate && npx prisma db push --accept-data-loss && npx tsc && npx vite build
   ```
 - **Start Command:** 
   ```bash
