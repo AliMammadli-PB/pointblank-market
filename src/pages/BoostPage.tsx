@@ -37,7 +37,7 @@ function BoostPage() {
   }
 
   const handleWhatsApp = (message: string) => {
-    const phoneNumber = '79271031033' // WhatsApp numarası
+    const phoneNumber = '79271031033'
     const encodedMessage = encodeURIComponent(message)
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank')
   }
@@ -71,29 +71,21 @@ function BoostPage() {
   }
 
   return (
-    <div className="min-h-screen animated-bg text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-neon-purple rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-72 h-72 bg-neon-pink rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-      </div>
-
+    <div className="min-h-screen bg-black">
       <div className="absolute top-4 right-4 z-20">
         <LanguageSelector />
       </div>
 
-      <div className="container mx-auto px-4 py-12 relative z-10">
+      <div className="container mx-auto px-6 py-16">
         {/* Header */}
-        <div className="text-center mb-16 space-y-6">
-          <h1 className="text-5xl md:text-7xl font-bold float">
-            <span className="gradient-text">
-              🚀 Boost Xidmətləri
-            </span>
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Boost Xidmətləri
           </h1>
-          <p className="text-gray-300 text-xl md:text-2xl">Oyununuzu bir səviyyə yüksəldin</p>
+          <p className="text-gray-400 mb-8">Oyununuzu bir səviyyə yüksəldin</p>
           <a
             href="/"
-            className="inline-block px-6 py-3 glass hover-scale rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/20"
+            className="inline-block text-gray-400 hover:text-white"
           >
             ← Ana səhifəyə qayıt
           </a>
@@ -105,68 +97,60 @@ function BoostPage() {
             {/* Battle Pass */}
             <div
               onClick={() => setSelectedBoost('battlepass')}
-              className="glass-strong card-shine rounded-2xl p-8 border border-neon-purple/30 hover:border-neon-purple hover-scale cursor-pointer transition-all duration-500 group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
             >
-              <div className="text-center">
-                <div className="text-6xl mb-4">🎯</div>
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-neon-purple transition-colors">
-                  Battle Pass
-                </h3>
-                <p className="text-gray-400 mb-4">Səviyyə boost</p>
-                <div className="text-neon-blue text-xl font-bold">
-                  {settings.battlePassPrice} ₼
-                </div>
+              <div className="text-5xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-purple-400">
+                Battle Pass
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">Səviyyə boost</p>
+              <div className="text-white font-semibold">
+                {settings.battlePassPrice} ₼
               </div>
             </div>
 
             {/* Rank */}
             <div
               onClick={() => setSelectedBoost('rank')}
-              className="glass-strong card-shine rounded-2xl p-8 border border-neon-pink/30 hover:border-neon-pink hover-scale cursor-pointer transition-all duration-500 group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
             >
-              <div className="text-center">
-                <div className="text-6xl mb-4">⭐</div>
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-neon-pink transition-colors">
-                  Rank
-                </h3>
-                <p className="text-gray-400 mb-4">Rank yüksəltmə</p>
-                <div className="text-neon-pink text-xl font-bold">
-                  {settings.rankPrice} ₼
-                </div>
+              <div className="text-5xl mb-4">⭐</div>
+              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400">
+                Rank
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">Rank yüksəltmə</p>
+              <div className="text-white font-semibold">
+                {settings.rankPrice} ₼
               </div>
             </div>
 
             {/* Rutbe */}
             <div
               onClick={() => setSelectedBoost('rutbe')}
-              className="glass-strong card-shine rounded-2xl p-8 border border-neon-blue/30 hover:border-neon-blue hover-scale cursor-pointer transition-all duration-500 group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
             >
-              <div className="text-center">
-                <div className="text-6xl mb-4">🎖️</div>
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-neon-blue transition-colors">
-                  Rütbə
-                </h3>
-                <p className="text-gray-400 mb-4">Rütbə boost</p>
-                <div className="text-neon-blue text-xl font-bold">
-                  {settings.rutbePrice} ₼
-                </div>
+              <div className="text-5xl mb-4">🎖️</div>
+              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-green-400">
+                Rütbə
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">Rütbə boost</p>
+              <div className="text-white font-semibold">
+                {settings.rutbePrice} ₼
               </div>
             </div>
 
             {/* Misya */}
             <div
               onClick={() => setSelectedBoost('misya')}
-              className="glass-strong card-shine rounded-2xl p-8 border border-yellow-500/30 hover:border-yellow-500 hover-scale cursor-pointer transition-all duration-500 group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
             >
-              <div className="text-center">
-                <div className="text-6xl mb-4">📋</div>
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-yellow-500 transition-colors">
-                  Misya
-                </h3>
-                <p className="text-gray-400 mb-4">Misya boost</p>
-                <div className="text-yellow-500 text-xl font-bold">
-                  {settings.misyaPrice} ₼
-                </div>
+              <div className="text-5xl mb-4">📋</div>
+              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400">
+                Misya
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">Misya boost</p>
+              <div className="text-white font-semibold">
+                {settings.misyaPrice} ₼
               </div>
             </div>
           </div>
@@ -174,91 +158,93 @@ function BoostPage() {
 
         {/* Battle Pass Details */}
         {selectedBoost === 'battlepass' && (
-          <div className="max-w-2xl mx-auto bg-gray-800/50 border-2 border-neon-purple/50 rounded-xl p-8">
+          <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-6 text-gray-400 hover:text-white transition-colors"
+              className="mb-8 text-gray-400 hover:text-white"
             >
               ← Geri
             </button>
             
-            <h2 className="text-3xl font-bold mb-6 text-center text-neon-purple">
-              Battle Pass Boost
-            </h2>
+            <div className="clean-card rounded-lg p-8">
+              <h2 className="text-3xl font-bold text-white mb-8 text-center">
+                Battle Pass Boost
+              </h2>
 
-            <div className="space-y-6">
-              <div>
-                <label className="block text-gray-300 mb-2">Başlanğıc Səviyyə: {battlePassFrom}</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  value={battlePassFrom}
-                  onChange={(e) => setBattlePassFrom(Number(e.target.value))}
-                  className="w-full"
-                />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-white mb-3">Başlanğıc Səviyyə: {battlePassFrom}</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="50"
+                    value={battlePassFrom}
+                    onChange={(e) => setBattlePassFrom(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-white mb-3">Bitiş Səviyyə: {battlePassTo}</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="50"
+                    value={battlePassTo}
+                    onChange={(e) => setBattlePassTo(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="bg-white/5 rounded-lg p-6 text-center">
+                  <p className="text-gray-400 mb-2">Seçilən aralıq</p>
+                  <p className="text-3xl font-bold text-white">
+                    {battlePassFrom} - {battlePassTo}
+                  </p>
+                </div>
+
+                <div className="text-center text-2xl font-bold text-white">
+                  Qiymət: {settings.battlePassPrice} ₼
+                </div>
+
+                <button
+                  onClick={handleBattlePassSubmit}
+                  className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
+                >
+                  WhatsApp ilə əlaqə saxla
+                </button>
               </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">Bitiş Səviyyə: {battlePassTo}</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  value={battlePassTo}
-                  onChange={(e) => setBattlePassTo(Number(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="bg-gray-900/50 rounded-lg p-4 text-center">
-                <p className="text-gray-400 mb-2">Seçilən aralıq</p>
-                <p className="text-2xl font-bold text-neon-purple">
-                  {battlePassFrom} - {battlePassTo}
-                </p>
-              </div>
-
-              <div className="text-center text-xl font-bold text-neon-blue">
-                Qiymət: {settings.battlePassPrice} ₼
-              </div>
-
-              <button
-                onClick={handleBattlePassSubmit}
-                className="w-full py-4 bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold rounded-lg hover:shadow-neon-purple transition-all duration-300"
-              >
-                WhatsApp ilə əlaqə saxla
-              </button>
             </div>
           </div>
         )}
 
         {/* Rank Details */}
         {selectedBoost === 'rank' && (
-          <div className="max-w-2xl mx-auto bg-gray-800/50 border-2 border-neon-pink/50 rounded-xl p-8">
+          <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-6 text-gray-400 hover:text-white transition-colors"
+              className="mb-8 text-gray-400 hover:text-white"
             >
               ← Geri
             </button>
             
-            <h2 className="text-3xl font-bold mb-6 text-center text-neon-pink">
-              Rank Boost
-            </h2>
+            <div className="clean-card rounded-lg p-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-8">
+                Rank Boost
+              </h2>
 
-            <div className="text-center space-y-6">
-              <div className="text-6xl">⭐</div>
-              <p className="text-gray-400 text-lg">
+              <div className="text-6xl mb-6">⭐</div>
+              <p className="text-gray-400 text-lg mb-8">
                 Rank boost xidməti üçün bizimlə əlaqə saxlayın
               </p>
               
-              <div className="text-3xl font-bold text-neon-pink">
+              <div className="text-3xl font-bold text-white mb-8">
                 Qiymət: {settings.rankPrice} ₼
               </div>
 
               <button
                 onClick={handleRankBoost}
-                className="w-full py-4 bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold rounded-lg hover:shadow-neon-pink transition-all duration-300"
+                className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
               >
                 WhatsApp ilə əlaqə saxla
               </button>
@@ -268,73 +254,75 @@ function BoostPage() {
 
         {/* Rutbe Details */}
         {selectedBoost === 'rutbe' && (
-          <div className="max-w-2xl mx-auto bg-gray-800/50 border-2 border-neon-blue/50 rounded-xl p-8">
+          <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-6 text-gray-400 hover:text-white transition-colors"
+              className="mb-8 text-gray-400 hover:text-white"
             >
               ← Geri
             </button>
             
-            <h2 className="text-3xl font-bold mb-6 text-center text-neon-blue">
-              Rütbə Boost
-            </h2>
+            <div className="clean-card rounded-lg p-8">
+              <h2 className="text-3xl font-bold text-white mb-8 text-center">
+                Rütbə Boost
+              </h2>
 
-            <div className="space-y-6">
-              <div className="text-6xl text-center">🎖️</div>
-              
-              <div>
-                <label className="block text-gray-300 mb-2">Rütbə adını yazın:</label>
-                <input
-                  type="text"
-                  value={rutbeName}
-                  onChange={(e) => setRutbeName(e.target.value)}
-                  placeholder="Məsələn: General, Polkovnik və s."
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-blue focus:outline-none transition-colors"
-                />
+              <div className="space-y-6">
+                <div className="text-6xl text-center mb-6">🎖️</div>
+                
+                <div>
+                  <label className="block text-white mb-2">Rütbə adını yazın:</label>
+                  <input
+                    type="text"
+                    value={rutbeName}
+                    onChange={(e) => setRutbeName(e.target.value)}
+                    placeholder="Məsələn: General, Polkovnik və s."
+                    className="w-full px-4 py-3 bg-white/5 border border-gray-800 rounded-lg text-white focus:border-gray-600 focus:outline-none"
+                  />
+                </div>
+
+                <div className="text-center text-2xl font-bold text-white">
+                  Qiymət: {settings.rutbePrice} ₼
+                </div>
+
+                <button
+                  onClick={handleRutbeSubmit}
+                  className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
+                >
+                  WhatsApp ilə əlaqə saxla
+                </button>
               </div>
-
-              <div className="text-center text-xl font-bold text-neon-blue">
-                Qiymət: {settings.rutbePrice} ₼
-              </div>
-
-              <button
-                onClick={handleRutbeSubmit}
-                className="w-full py-4 bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold rounded-lg hover:shadow-neon-blue transition-all duration-300"
-              >
-                WhatsApp ilə əlaqə saxla
-              </button>
             </div>
           </div>
         )}
 
         {/* Misya Details */}
         {selectedBoost === 'misya' && (
-          <div className="max-w-2xl mx-auto bg-gray-800/50 border-2 border-yellow-500/50 rounded-xl p-8">
+          <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-6 text-gray-400 hover:text-white transition-colors"
+              className="mb-8 text-gray-400 hover:text-white"
             >
               ← Geri
             </button>
             
-            <h2 className="text-3xl font-bold mb-6 text-center text-yellow-500">
-              Misya Boost
-            </h2>
+            <div className="clean-card rounded-lg p-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-8">
+                Misya Boost
+              </h2>
 
-            <div className="text-center space-y-6">
-              <div className="text-6xl">📋</div>
-              <p className="text-gray-400 text-lg">
+              <div className="text-6xl mb-6">📋</div>
+              <p className="text-gray-400 text-lg mb-8">
                 Misya boost xidməti üçün bizimlə əlaqə saxlayın
               </p>
               
-              <div className="text-3xl font-bold text-yellow-500">
+              <div className="text-3xl font-bold text-white mb-8">
                 Qiymət: {settings.misyaPrice} ₼
               </div>
 
               <button
                 onClick={handleMisyaBoost}
-                className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-yellow transition-all duration-300"
+                className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
               >
                 WhatsApp ilə əlaqə saxla
               </button>
@@ -347,4 +335,3 @@ function BoostPage() {
 }
 
 export default BoostPage
-
