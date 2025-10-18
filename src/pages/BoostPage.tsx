@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { Target, Star, Award, ClipboardList, ArrowLeft, MessageCircle } from 'lucide-react'
 import LanguageSelector from '../components/LanguageSelector'
 
 const API_URL = import.meta.env.VITE_API_URL || ''
@@ -85,9 +86,10 @@ function BoostPage() {
           <p className="text-gray-400 mb-8">Oyununuzu bir səviyyə yüksəldin</p>
           <a
             href="/"
-            className="inline-block text-gray-400 hover:text-white"
+            className="inline-block text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
           >
-            ← Ana səhifəyə qayıt
+            <ArrowLeft size={20} />
+            Ana səhifəyə qayıt
           </a>
         </div>
 
@@ -97,10 +99,12 @@ function BoostPage() {
             {/* Battle Pass */}
             <div
               onClick={() => setSelectedBoost('battlepass')}
-              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
-              <div className="text-5xl mb-4">🎯</div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-purple-400">
+              <div className="mb-4 text-purple-400 flex justify-center group-hover:scale-110 transition-transform">
+                <Target size={48} strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
                 Battle Pass
               </h3>
               <p className="text-gray-400 text-sm mb-4">Səviyyə boost</p>
@@ -112,10 +116,12 @@ function BoostPage() {
             {/* Rank */}
             <div
               onClick={() => setSelectedBoost('rank')}
-              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
-              <div className="text-5xl mb-4">⭐</div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400">
+              <div className="mb-4 text-blue-400 flex justify-center group-hover:scale-110 transition-transform">
+                <Star size={48} strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
                 Rank
               </h3>
               <p className="text-gray-400 text-sm mb-4">Rank yüksəltmə</p>
@@ -127,10 +133,12 @@ function BoostPage() {
             {/* Rutbe */}
             <div
               onClick={() => setSelectedBoost('rutbe')}
-              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
-              <div className="text-5xl mb-4">🎖️</div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-green-400">
+              <div className="mb-4 text-green-400 flex justify-center group-hover:scale-110 transition-transform">
+                <Award size={48} strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
                 Rütbə
               </h3>
               <p className="text-gray-400 text-sm mb-4">Rütbə boost</p>
@@ -142,10 +150,12 @@ function BoostPage() {
             {/* Misya */}
             <div
               onClick={() => setSelectedBoost('misya')}
-              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group"
+              className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
-              <div className="text-5xl mb-4">📋</div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400">
+              <div className="mb-4 text-yellow-400 flex justify-center group-hover:scale-110 transition-transform">
+                <ClipboardList size={48} strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
                 Misya
               </h3>
               <p className="text-gray-400 text-sm mb-4">Misya boost</p>
@@ -161,9 +171,10 @@ function BoostPage() {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← Geri
+              <ArrowLeft size={20} />
+              Geri
             </button>
             
             <div className="clean-card rounded-lg p-8">
@@ -209,8 +220,9 @@ function BoostPage() {
 
                 <button
                   onClick={handleBattlePassSubmit}
-                  className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
+                  className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors"
                 >
+                  <MessageCircle size={20} />
                   WhatsApp ilə əlaqə saxla
                 </button>
               </div>
@@ -223,9 +235,10 @@ function BoostPage() {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← Geri
+              <ArrowLeft size={20} />
+              Geri
             </button>
             
             <div className="clean-card rounded-lg p-8 text-center">
@@ -233,7 +246,9 @@ function BoostPage() {
                 Rank Boost
               </h2>
 
-              <div className="text-6xl mb-6">⭐</div>
+              <div className="mb-6 text-blue-400 flex justify-center">
+                <Star size={64} strokeWidth={1.5} />
+              </div>
               <p className="text-gray-400 text-lg mb-8">
                 Rank boost xidməti üçün bizimlə əlaqə saxlayın
               </p>
@@ -257,9 +272,10 @@ function BoostPage() {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← Geri
+              <ArrowLeft size={20} />
+              Geri
             </button>
             
             <div className="clean-card rounded-lg p-8">
@@ -268,7 +284,9 @@ function BoostPage() {
               </h2>
 
               <div className="space-y-6">
-                <div className="text-6xl text-center mb-6">🎖️</div>
+                <div className="mb-6 text-green-400 flex justify-center">
+                  <Award size={64} strokeWidth={1.5} />
+                </div>
                 
                 <div>
                   <label className="block text-white mb-2">Rütbə adını yazın:</label>
@@ -301,9 +319,10 @@ function BoostPage() {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedBoost(null)}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← Geri
+              <ArrowLeft size={20} />
+              Geri
             </button>
             
             <div className="clean-card rounded-lg p-8 text-center">
@@ -311,7 +330,9 @@ function BoostPage() {
                 Misya Boost
               </h2>
 
-              <div className="text-6xl mb-6">📋</div>
+              <div className="mb-6 text-yellow-400 flex justify-center">
+                <ClipboardList size={64} strokeWidth={1.5} />
+              </div>
               <p className="text-gray-400 text-lg mb-8">
                 Misya boost xidməti üçün bizimlə əlaqə saxlayın
               </p>

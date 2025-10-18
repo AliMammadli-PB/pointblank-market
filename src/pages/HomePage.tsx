@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
@@ -116,20 +117,24 @@ function HomePage() {
               <button
                 onClick={handleRubleClick}
                 disabled={loading}
-                className="clean-card p-8 rounded-lg hover:bg-white/5 disabled:opacity-50 text-left group"
+                className="clean-card p-8 rounded-lg hover:bg-white/5 disabled:opacity-50 text-left group transition-all"
               >
-                <div className="text-4xl mb-4">💰</div>
-                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400">Rubl</h3>
+                <div className="mb-4 text-blue-400 group-hover:scale-110 transition-transform inline-block">
+                  <DollarSign size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Rubl</h3>
                 <p className="text-gray-400 text-sm">{t('home.rublePriceDesc')}</p>
               </button>
 
               {/* Boost */}
               <a
                 href="/boost"
-                className="clean-card p-8 rounded-lg hover:bg-white/5 text-left group"
+                className="clean-card p-8 rounded-lg hover:bg-white/5 text-left group transition-all"
               >
-                <div className="text-4xl mb-4">🚀</div>
-                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-purple-400">Boost</h3>
+                <div className="mb-4 text-purple-400 group-hover:scale-110 transition-transform inline-block">
+                  <TrendingUp size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Boost</h3>
                 <p className="text-gray-400 text-sm">Səviyyə yüksəltmə</p>
               </a>
 
@@ -137,10 +142,12 @@ function HomePage() {
               <button
                 onClick={handleAccountsClick}
                 disabled={loading}
-                className="clean-card p-8 rounded-lg hover:bg-white/5 disabled:opacity-50 text-left group"
+                className="clean-card p-8 rounded-lg hover:bg-white/5 disabled:opacity-50 text-left group transition-all"
               >
-                <div className="text-4xl mb-4">🎮</div>
-                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-pink-400">Hesablar</h3>
+                <div className="mb-4 text-pink-400 group-hover:scale-110 transition-transform inline-block">
+                  <Gamepad2 size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Hesablar</h3>
                 <p className="text-gray-400 text-sm">{t('home.accountsDesc')}</p>
               </button>
             </div>
@@ -151,9 +158,10 @@ function HomePage() {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setView('home')}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← {t('common.back')}
+              <ArrowLeft size={20} />
+              {t('common.back')}
             </button>
 
             <div className="clean-card rounded-lg p-10 text-center">
@@ -177,9 +185,10 @@ function HomePage() {
           <div className="max-w-6xl mx-auto">
             <button
               onClick={() => setView('home')}
-              className="mb-8 text-gray-400 hover:text-white"
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
-              ← {t('common.back')}
+              <ArrowLeft size={20} />
+              {t('common.back')}
             </button>
 
             <h2 className="text-3xl font-bold text-white mb-10">{t('accounts.title')}</h2>
@@ -229,8 +238,9 @@ function HomePage() {
 
                       <button
                         onClick={() => handleBuyClick(account)}
-                        className="w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
+                        className="w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors"
                       >
+                        <ShoppingCart size={20} />
                         {t('common.buy')}
                       </button>
                     </div>
