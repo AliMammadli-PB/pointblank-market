@@ -1,16 +1,17 @@
 # PointBlank Market
 
-React + TypeScript + Tailwind + Node.js + Express + Prisma (SQLite) ile geliştirilmiş PointBlank Market web uygulaması.
+React + TypeScript + Tailwind + Node.js + Express + Supabase PostgreSQL ile geliştirilmiş PointBlank Market web uygulaması.
 
 ## Özellikler
 
 - 🌐 **3 Dil Desteği**: Azerbaycan dili (varsayılan), Türkçe ve Rusça
-- 🎮 **Kullanıcı Arayüzü**: Rubl fiyatı görüntüleme ve satılık hesapları listeleme
-- 🔐 **Admin Paneli**: Giriş yapma, rubl fiyatını güncelleme ve hesap yönetimi
-- 🎨 **Modern UI**: Koyu tema ve neon renkli tasarım
-- 📹 **YouTube Entegrasyonu**: Hesap tanıtım videoları için embed player
-- 💾 **SQLite Veritabanı**: Prisma ORM ile kolay veritabanı yönetimi
-- 💬 **WhatsApp Entegrasyonu**: Satın alma talebi için otomatik WhatsApp mesajı
+- 💰 **Rubl Sistemi**: Rubl fiyatı görüntüleme ve satın alma
+- 🚀 **Boost Hizmetleri**: Battle Pass, Rank, Rütbe ve Misya boost
+- ⚡ **Macro Sistemi**: Hz değeri ve hasar veren dosya seçenekleriyle macro
+- 🎮 **Satılık Hesaplar**: YouTube video entegrasyonlu hesap listeleme
+- 🔐 **Admin Paneli**: Captcha korumalı giriş, fiyat yönetimi ve hesap yönetimi
+- 🎨 **Modern UI**: Koyu tema, minimalist ve profesyonel tasarım
+- 💬 **WhatsApp Entegrasyonu**: Tüm satın alma talepleri için otomatik mesaj
 
 ## Kurulum
 

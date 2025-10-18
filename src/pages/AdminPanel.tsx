@@ -17,6 +17,7 @@ interface Account {
   rankGif: string
   price: number
   youtubeUrl: string
+  creditPercentage?: number
 }
 
 function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
@@ -37,7 +38,8 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     battlePassPrice: '',
     rankPrice: '',
     rutbePrice: '',
-    misyaPrice: ''
+    misyaPrice: '',
+    macroPrice: ''
   })
   const [boostLoading, setBoostLoading] = useState(false)
   const [boostSuccess, setBoostSuccess] = useState(false)
@@ -54,6 +56,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     rankGif: '0.gif',
     price: '',
     youtubeUrl: '',
+    creditPercentage: '40',
   })
 
   useEffect(() => {
@@ -116,7 +119,8 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         battlePassPrice: response.data.battlePassPrice.toString(),
         rankPrice: response.data.rankPrice.toString(),
         rutbePrice: response.data.rutbePrice.toString(),
-        misyaPrice: response.data.misyaPrice.toString()
+        misyaPrice: response.data.misyaPrice.toString(),
+        macroPrice: (response.data.macroPrice || 0).toString()
       })
     } catch (error) {
       console.error('[ADMIN] ❌ Boost ayarları hatası:', error)
@@ -136,7 +140,8 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
           battlePassPrice: parseFloat(boostSettings.battlePassPrice),
           rankPrice: parseFloat(boostSettings.rankPrice),
           rutbePrice: parseFloat(boostSettings.rutbePrice),
-          misyaPrice: parseFloat(boostSettings.misyaPrice)
+          misyaPrice: parseFloat(boostSettings.misyaPrice),
+          macroPrice: parseFloat(boostSettings.macroPrice)
         },
         getAuthHeaders()
       )
@@ -177,7 +182,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         await axios.post(`${API_URL}/api/accounts`, formData, getAuthHeaders())
       }
 
-      setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '' })
+      setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '', creditPercentage: '40' })
       setShowForm(false)
       setEditingAccount(null)
       loadAccounts()
@@ -194,6 +199,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       rankGif: account.rankGif,
       price: account.price.toString(),
       youtubeUrl: account.youtubeUrl,
+      creditPercentage: (account.creditPercentage || 40).toString(),
     })
     setShowForm(true)
   }
@@ -212,7 +218,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const cancelForm = () => {
     setShowForm(false)
     setEditingAccount(null)
-    setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '' })
+    setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '', creditPercentage: '40' })
   }
 
   return (
@@ -378,6 +384,18 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-gray-300 mb-2">⚡ Macro Qiyməti (Manat)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={boostSettings.macroPrice}
+                    onChange={(e) => setBoostSettings({ ...boostSettings, macroPrice: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
                 <button
                   type="submit"
                   disabled={boostLoading}
@@ -491,6 +509,20 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                       className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
                       required
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 mb-2">Kredit Faizi (%)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={formData.creditPercentage}
+                      onChange={(e) => setFormData({ ...formData, creditPercentage: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-neon-purple focus:outline-none transition-colors"
+                      required
+                    />
+                    <p className="text-gray-500 text-xs mt-1">İlkin ödəniş faizi (məsələn: 40 = %40)</p>
                   </div>
 
                   <div className="flex gap-4">

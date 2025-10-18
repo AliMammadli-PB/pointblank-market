@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
-import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart } from 'lucide-react'
+import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart, Zap } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
@@ -14,6 +14,12 @@ interface Account {
   rankGif: string
   price: number
   youtubeUrl: string
+  creditPercentage?: number
+}
+
+interface CreditModalState {
+  show: boolean
+  account: Account | null
 }
 
 function HomePage() {
@@ -31,6 +37,8 @@ function HomePage() {
     rubleAmount: '',
     receiptUrl: ''
   })
+  const [creditModal, setCreditModal] = useState<CreditModalState>({ show: false, account: null })
+  const [acceptCreditTerms, setAcceptCreditTerms] = useState(false)
 
   // URL'e göre view'i sync et
   useEffect(() => {
@@ -115,6 +123,38 @@ function HomePage() {
     window.open(whatsappUrl, '_blank')
   }
 
+  const handleCreditClick = (account: Account) => {
+    setCreditModal({ show: true, account })
+    setAcceptCreditTerms(false)
+  }
+
+  const handleCreditSubmit = () => {
+    if (!acceptCreditTerms) {
+      alert(t('accounts.mustAcceptTerms'))
+      return
+    }
+
+    if (!creditModal.account) return
+
+    const account = creditModal.account
+    const percentage = (account.creditPercentage || 40) / 100
+    const initialPayment = Math.round(account.price * percentage)
+    const remainingPayment = account.price - initialPayment
+
+    const message = `*${t('accounts.creditRequest')}*\n\n` +
+      `*Hesab:* ${account.name}\n` +
+      `*Rütbə:* ${account.rankGif.replace('.gif', '')}\n` +
+      `*Ümumi Qiymət:* ${account.price} Manat\n` +
+      `*İlkin Ödəniş (${account.creditPercentage || 40}%):* ${initialPayment} Manat\n` +
+      `*Qalan Ödəniş:* ${remainingPayment} Manat (1 ay ərzində)\n` +
+      `*Video:* ${account.youtubeUrl}\n\n` +
+      `✅ Kredit şərtlərini qəbul etdim`
+    
+    const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+    setCreditModal({ show: false, account: null })
+  }
+
   const handleBuyRubleClick = () => {
     setShowRubleModal(true)
   }
@@ -155,7 +195,7 @@ function HomePage() {
               <p className="text-gray-400 text-lg">{t('home.selectOption')}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Rubl */}
               <button
                 onClick={handleRubleClick}
@@ -177,8 +217,20 @@ function HomePage() {
                 <div className="mb-4 text-purple-400 group-hover:scale-110 transition-transform inline-block">
                   <TrendingUp size={40} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Boost</h3>
-                <p className="text-gray-400 text-sm">Səviyyə yüksəltmə</p>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.boostTitle')}</h3>
+                <p className="text-gray-400 text-sm">{t('home.boostDesc')}</p>
+              </a>
+
+              {/* Macro */}
+              <a
+                href="/macro"
+                className="clean-card p-8 rounded-lg hover:bg-white/5 text-left group transition-all"
+              >
+                <div className="mb-4 text-yellow-400 group-hover:scale-110 transition-transform inline-block">
+                  <Zap size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.macroTitle')}</h3>
+                <p className="text-gray-400 text-sm">{t('home.macroDesc')}</p>
               </a>
 
               {/* Hesablar */}
@@ -190,7 +242,7 @@ function HomePage() {
                 <div className="mb-4 text-pink-400 group-hover:scale-110 transition-transform inline-block">
                   <Gamepad2 size={40} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Hesablar</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.accountsTitle')}</h3>
                 <p className="text-gray-400 text-sm">{t('home.accountsDesc')}</p>
               </button>
             </div>
@@ -267,7 +319,7 @@ function HomePage() {
                       
                       <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-800">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-400 text-sm">Rütbə:</span>
+                          <span className="text-gray-400 text-sm">{t('accounts.rank')}:</span>
                           <img 
                             src={`/assets/rutbe/${account.rankGif}`}
                             alt="Rank"
@@ -279,18 +331,87 @@ function HomePage() {
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => handleBuyClick(account)}
-                        className="w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <ShoppingCart size={20} />
-                        {t('common.buy')}
-                      </button>
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => handleBuyClick(account)}
+                          className="w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors"
+                        >
+                          <ShoppingCart size={20} />
+                          {t('common.buy')}
+                        </button>
+                        <button
+                          onClick={() => handleCreditClick(account)}
+                          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
+                        >
+                          <ShoppingCart size={20} />
+                          {t('accounts.buyWithCredit')}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Credit Modal */}
+        {creditModal.show && creditModal.account && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="clean-card rounded-lg p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                {t('accounts.creditAgreement')}
+              </h3>
+              
+              <div className="mb-6">
+                <div className="bg-white/5 rounded-lg p-4 mb-4">
+                  <p className="text-white font-semibold mb-2">{creditModal.account.name}</p>
+                  <p className="text-gray-400 text-sm mb-2">
+                    {t('accounts.price')}: {creditModal.account.price} ₼
+                  </p>
+                  <p className="text-green-400 text-sm">
+                    {t('accounts.initialPayment').replace('40%', `${creditModal.account.creditPercentage || 40}%`)}: {Math.round(creditModal.account.price * ((creditModal.account.creditPercentage || 40) / 100))} ₼
+                  </p>
+                  <p className="text-yellow-400 text-sm">
+                    {t('accounts.remainingPayment')}: {creditModal.account.price - Math.round(creditModal.account.price * ((creditModal.account.creditPercentage || 40) / 100))} ₼
+                  </p>
+                </div>
+
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                  <p className="text-red-400 text-sm leading-relaxed">
+                    {t('accounts.creditTerms')}
+                  </p>
+                </div>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={acceptCreditTerms}
+                    onChange={(e) => setAcceptCreditTerms(e.target.checked)}
+                    className="mt-1 w-5 h-5 rounded border-gray-600 text-blue-600 focus:ring-blue-600 focus:ring-offset-0 cursor-pointer"
+                  />
+                  <span className="text-white text-sm group-hover:text-blue-400 transition-colors">
+                    {t('accounts.acceptTerms')}
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCreditSubmit}
+                  disabled={!acceptCreditTerms}
+                  className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {t('accounts.sendWhatsapp')}
+                </button>
+                <button
+                  onClick={() => setCreditModal({ show: false, account: null })}
+                  className="flex-1 py-3 bg-white/5 text-white font-semibold rounded-lg hover:bg-white/10 border border-gray-800 transition-colors"
+                >
+                  {t('accounts.cancel')}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

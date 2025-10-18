@@ -226,7 +226,7 @@ app.get('/api/accounts', async (req, res) => {
 
 app.post('/api/accounts', authenticateToken, async (req, res) => {
   try {
-    const { name, description, rankGif, price, youtubeUrl } = req.body;
+    const { name, description, rankGif, price, youtubeUrl, creditPercentage } = req.body;
     console.log(`[ACCOUNTS] POST - Yeni hesap ekleniyor: ${name}`);
     
     const { data: account, error } = await supabase
@@ -236,7 +236,8 @@ app.post('/api/accounts', authenticateToken, async (req, res) => {
         description,
         rankGif,
         price: parseFloat(price),
-        youtubeUrl
+        youtubeUrl,
+        creditPercentage: creditPercentage ? parseInt(creditPercentage) : 40
       }])
       .select()
       .single();
@@ -257,7 +258,7 @@ app.post('/api/accounts', authenticateToken, async (req, res) => {
 app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, rankGif, price, youtubeUrl } = req.body;
+    const { name, description, rankGif, price, youtubeUrl, creditPercentage } = req.body;
     console.log(`[ACCOUNTS] PUT - Hesap güncelleniyor: ID ${id}`);
     
     const { data: account, error } = await supabase
@@ -267,7 +268,8 @@ app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
         description,
         rankGif,
         price: parseFloat(price),
-        youtubeUrl
+        youtubeUrl,
+        creditPercentage: creditPercentage ? parseInt(creditPercentage) : 40
       })
       .eq('id', parseInt(id))
       .select()
@@ -324,8 +326,8 @@ app.get('/api/boost-settings', async (req, res) => {
       return res.status(500).json({ error: 'Server xətası' });
     }
     
-    console.log('[BOOST] ✅ Boost ayarları getirildi:', settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0 });
-    res.json(settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0 });
+    console.log('[BOOST] ✅ Boost ayarları getirildi:', settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0, macroPrice: 0 });
+    res.json(settings || { battlePassPrice: 0, rankPrice: 0, rutbePrice: 0, misyaPrice: 0, macroPrice: 0 });
   } catch (error) {
     console.error('[BOOST] ❌ Hata:', error);
     res.status(500).json({ error: 'Server xətası' });
@@ -334,7 +336,7 @@ app.get('/api/boost-settings', async (req, res) => {
 
 app.put('/api/boost-settings', authenticateToken, async (req, res) => {
   try {
-    const { battlePassPrice, rankPrice, rutbePrice, misyaPrice } = req.body;
+    const { battlePassPrice, rankPrice, rutbePrice, misyaPrice, macroPrice } = req.body;
     console.log(`[BOOST] PUT - Boost ayarları güncelleniyor...`);
     
     const { data: settings, error: fetchError } = await supabase
@@ -346,14 +348,21 @@ app.put('/api/boost-settings', authenticateToken, async (req, res) => {
     if (settings) {
       console.log('[BOOST] Mevcut ayar güncelleniyor...');
       // Update existing settings
+      const updateData = {
+        battlePassPrice: parseFloat(battlePassPrice),
+        rankPrice: parseFloat(rankPrice),
+        rutbePrice: parseFloat(rutbePrice),
+        misyaPrice: parseFloat(misyaPrice)
+      };
+      
+      // Add macroPrice if provided
+      if (macroPrice !== undefined) {
+        updateData.macroPrice = parseFloat(macroPrice);
+      }
+      
       const { data: updated, error } = await supabase
         .from('BoostSettings')
-        .update({
-          battlePassPrice: parseFloat(battlePassPrice),
-          rankPrice: parseFloat(rankPrice),
-          rutbePrice: parseFloat(rutbePrice),
-          misyaPrice: parseFloat(misyaPrice)
-        })
+        .update(updateData)
         .eq('id', settings.id)
         .select()
         .single();
@@ -367,14 +376,21 @@ app.put('/api/boost-settings', authenticateToken, async (req, res) => {
     } else {
       console.log('[BOOST] Yeni ayar oluşturuluyor...');
       // Create new settings
+      const insertData = {
+        battlePassPrice: parseFloat(battlePassPrice),
+        rankPrice: parseFloat(rankPrice),
+        rutbePrice: parseFloat(rutbePrice),
+        misyaPrice: parseFloat(misyaPrice)
+      };
+      
+      // Add macroPrice if provided
+      if (macroPrice !== undefined) {
+        insertData.macroPrice = parseFloat(macroPrice);
+      }
+      
       const { data: created, error } = await supabase
         .from('BoostSettings')
-        .insert([{
-          battlePassPrice: parseFloat(battlePassPrice),
-          rankPrice: parseFloat(rankPrice),
-          rutbePrice: parseFloat(rutbePrice),
-          misyaPrice: parseFloat(misyaPrice)
-        }])
+        .insert([insertData])
         .select()
         .single();
       

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import BoostPage from './pages/BoostPage'
+import MacroPage from './pages/MacroPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminPanel from './pages/AdminPanel'
 import { useState, useEffect } from 'react'
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/boost" element={<BoostPage />} />
+          <Route path="/macro" element={<MacroPage />} />
           <Route 
             path="/admin/login" 
             element={

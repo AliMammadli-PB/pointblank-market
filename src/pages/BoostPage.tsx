@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { Target, Star, Award, ClipboardList, ArrowLeft, MessageCircle } from 'lucide-react'
 import LanguageSelector from '../components/LanguageSelector'
+import { useLanguage } from '../context/LanguageContext'
 
 const API_URL = import.meta.env.VITE_API_URL || ''
 
@@ -14,6 +15,7 @@ interface BoostSettings {
 }
 
 function BoostPage() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
   const [settings, setSettings] = useState<BoostSettings>({
@@ -68,17 +70,20 @@ function BoostPage() {
     console.log('[BOOST] Battle Pass submit - From:', battlePassFrom, 'To:', battlePassTo)
     if (battlePassFrom >= battlePassTo) {
       console.log('[BOOST] ❌ Geçersiz aralık!')
-      alert('Başlangıç değeri bitiş değerinden küçük olmalı!')
+      alert(t('boost.battlepass.invalidRange'))
       return
     }
-    const message = `Battle Pass Boost: ${battlePassFrom}-${battlePassTo} arası boost istiyorum. Fiyat: ${settings.battlePassPrice} manat`
+    const message = `*${t('boost.battlepass.whatsappTitle')}*\n\n` +
+      `*${t('boost.battlepass.range')}:* ${battlePassFrom}-${battlePassTo}\n` +
+      `*${t('boost.priceLabel')}:* ${settings.battlePassPrice} Manat`
     console.log('[BOOST] ✓ WhatsApp\'a yönlendiriliyor...')
     handleWhatsApp(message)
   }
 
   const handleRankBoost = () => {
     console.log('[BOOST] Rank boost - WhatsApp\'a yönlendiriliyor...')
-    const message = `Rank için boost istiyorum. Fiyat: ${settings.rankPrice} manat`
+    const message = `*${t('boost.rank.whatsappTitle')}*\n\n` +
+      `*${t('boost.priceLabel')}:* ${settings.rankPrice} Manat`
     handleWhatsApp(message)
   }
 
@@ -86,17 +91,20 @@ function BoostPage() {
     console.log('[BOOST] Rutbe submit - Rütbe:', rutbeName)
     if (!rutbeName.trim()) {
       console.log('[BOOST] ❌ Rütbe adı boş!')
-      alert('Lütfen rütbe ismini yazın!')
+      alert(t('boost.rutbe.enterName'))
       return
     }
-    const message = `Rütbe Boost: ${rutbeName} için boost istiyorum. Fiyat: ${settings.rutbePrice} manat`
+    const message = `*${t('boost.rutbe.whatsappTitle')}*\n\n` +
+      `*${t('boost.rutbe.rankName')}:* ${rutbeName}\n` +
+      `*${t('boost.priceLabel')}:* ${settings.rutbePrice} Manat`
     console.log('[BOOST] ✓ WhatsApp\'a yönlendiriliyor...')
     handleWhatsApp(message)
   }
 
   const handleMisyaBoost = () => {
     console.log('[BOOST] Misya boost - WhatsApp\'a yönlendiriliyor...')
-    const message = `Misya boost istiyorum. Fiyat: ${settings.misyaPrice} manat`
+    const message = `*${t('boost.misya.whatsappTitle')}*\n\n` +
+      `*${t('boost.priceLabel')}:* ${settings.misyaPrice} Manat`
     handleWhatsApp(message)
   }
 
@@ -110,16 +118,16 @@ function BoostPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Boost Xidmətləri
+            {t('boost.title')}
           </h1>
-          <p className="text-gray-400 mb-8">Oyununuzu bir səviyyə yüksəldin</p>
-          <a
-            href="/"
-            className="inline-block text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
+          <p className="text-gray-400 mb-8">{t('boost.description')}</p>
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} />
-            Ana səhifəyə qayıt
-          </a>
+            {t('common.back')}
+          </button>
         </div>
 
         {/* Boost Types */}
@@ -134,9 +142,9 @@ function BoostPage() {
                 <Target size={48} strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">
-                Battle Pass
+                {t('boost.battlepass.title')}
               </h3>
-              <p className="text-gray-400 text-sm mb-4">Səviyyə boost</p>
+              <p className="text-gray-400 text-sm mb-4">{t('boost.battlepass.desc')}</p>
               <div className="text-white font-semibold">
                 {settings.battlePassPrice} ₼
               </div>
@@ -151,9 +159,9 @@ function BoostPage() {
                 <Star size={48} strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">
-                Rank
+                {t('boost.rank.title')}
               </h3>
-              <p className="text-gray-400 text-sm mb-4">Rank yüksəltmə</p>
+              <p className="text-gray-400 text-sm mb-4">{t('boost.rank.desc')}</p>
               <div className="text-white font-semibold">
                 {settings.rankPrice} ₼
               </div>
@@ -168,9 +176,9 @@ function BoostPage() {
                 <Award size={48} strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">
-                Rütbə
+                {t('boost.rutbe.title')}
               </h3>
-              <p className="text-gray-400 text-sm mb-4">Rütbə boost</p>
+              <p className="text-gray-400 text-sm mb-4">{t('boost.rutbe.desc')}</p>
               <div className="text-white font-semibold">
                 {settings.rutbePrice} ₼
               </div>
@@ -185,9 +193,9 @@ function BoostPage() {
                 <ClipboardList size={48} strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">
-                Misya
+                {t('boost.misya.title')}
               </h3>
-              <p className="text-gray-400 text-sm mb-4">Misya boost</p>
+              <p className="text-gray-400 text-sm mb-4">{t('boost.misya.desc')}</p>
               <div className="text-white font-semibold">
                 {settings.misyaPrice} ₼
               </div>
@@ -203,17 +211,17 @@ function BoostPage() {
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
-              Geri
+              {t('common.back')}
             </button>
             
             <div className="clean-card rounded-lg p-8">
               <h2 className="text-3xl font-bold text-white mb-8 text-center">
-                Battle Pass Boost
+                {t('boost.battlepass.detailTitle')}
               </h2>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-white mb-3">Başlanğıc Səviyyə: {battlePassFrom}</label>
+                  <label className="block text-white mb-3">{t('boost.battlepass.startLevel')}: {battlePassFrom}</label>
                   <input
                     type="range"
                     min="1"
@@ -225,7 +233,7 @@ function BoostPage() {
                 </div>
 
                 <div>
-                  <label className="block text-white mb-3">Bitiş Səviyyə: {battlePassTo}</label>
+                  <label className="block text-white mb-3">{t('boost.battlepass.endLevel')}: {battlePassTo}</label>
                   <input
                     type="range"
                     min="1"
@@ -237,14 +245,14 @@ function BoostPage() {
                 </div>
 
                 <div className="bg-white/5 rounded-lg p-6 text-center">
-                  <p className="text-gray-400 mb-2">Seçilən aralıq</p>
+                  <p className="text-gray-400 mb-2">{t('boost.battlepass.selectedRange')}</p>
                   <p className="text-3xl font-bold text-white">
                     {battlePassFrom} - {battlePassTo}
                   </p>
                 </div>
 
                 <div className="text-center text-2xl font-bold text-white">
-                  Qiymət: {settings.battlePassPrice} ₼
+                  {t('boost.priceLabel')}: {settings.battlePassPrice} ₼
                 </div>
 
                 <button
@@ -252,7 +260,7 @@ function BoostPage() {
                   className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors"
                 >
                   <MessageCircle size={20} />
-                  WhatsApp ilə əlaqə saxla
+                  {t('boost.contactButton')}
                 </button>
               </div>
             </div>
@@ -267,30 +275,30 @@ function BoostPage() {
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
-              Geri
+              {t('common.back')}
             </button>
             
             <div className="clean-card rounded-lg p-8 text-center">
               <h2 className="text-3xl font-bold text-white mb-8">
-                Rank Boost
+                {t('boost.rank.detailTitle')}
               </h2>
 
               <div className="mb-6 text-blue-400 flex justify-center">
                 <Star size={64} strokeWidth={1.5} />
               </div>
               <p className="text-gray-400 text-lg mb-8">
-                Rank boost xidməti üçün bizimlə əlaqə saxlayın
+                {t('boost.rank.contactText')}
               </p>
               
               <div className="text-3xl font-bold text-white mb-8">
-                Qiymət: {settings.rankPrice} ₼
+                {t('boost.priceLabel')}: {settings.rankPrice} ₼
               </div>
 
               <button
                 onClick={handleRankBoost}
                 className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
               >
-                WhatsApp ilə əlaqə saxla
+                {t('boost.contactButton')}
               </button>
             </div>
           </div>
@@ -304,12 +312,12 @@ function BoostPage() {
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
-              Geri
+              {t('common.back')}
             </button>
             
             <div className="clean-card rounded-lg p-8">
               <h2 className="text-3xl font-bold text-white mb-8 text-center">
-                Rütbə Boost
+                {t('boost.rutbe.detailTitle')}
               </h2>
 
               <div className="space-y-6">
@@ -318,25 +326,25 @@ function BoostPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-white mb-2">Rütbə adını yazın:</label>
+                  <label className="block text-white mb-2">{t('boost.rutbe.inputLabel')}</label>
                   <input
                     type="text"
                     value={rutbeName}
                     onChange={(e) => setRutbeName(e.target.value)}
-                    placeholder="Məsələn: General, Polkovnik və s."
+                    placeholder={t('boost.rutbe.placeholder')}
                     className="w-full px-4 py-3 bg-white/5 border border-gray-800 rounded-lg text-white focus:border-gray-600 focus:outline-none"
                   />
                 </div>
 
                 <div className="text-center text-2xl font-bold text-white">
-                  Qiymət: {settings.rutbePrice} ₼
+                  {t('boost.priceLabel')}: {settings.rutbePrice} ₼
                 </div>
 
                 <button
                   onClick={handleRutbeSubmit}
                   className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
                 >
-                  WhatsApp ilə əlaqə saxla
+                  {t('boost.contactButton')}
                 </button>
               </div>
             </div>
@@ -351,30 +359,30 @@ function BoostPage() {
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
-              Geri
+              {t('common.back')}
             </button>
             
             <div className="clean-card rounded-lg p-8 text-center">
               <h2 className="text-3xl font-bold text-white mb-8">
-                Misya Boost
+                {t('boost.misya.detailTitle')}
               </h2>
 
               <div className="mb-6 text-yellow-400 flex justify-center">
                 <ClipboardList size={64} strokeWidth={1.5} />
               </div>
               <p className="text-gray-400 text-lg mb-8">
-                Misya boost xidməti üçün bizimlə əlaqə saxlayın
+                {t('boost.misya.contactText')}
               </p>
               
               <div className="text-3xl font-bold text-white mb-8">
-                Qiymət: {settings.misyaPrice} ₼
+                {t('boost.priceLabel')}: {settings.misyaPrice} ₼
               </div>
 
               <button
                 onClick={handleMisyaBoost}
                 className="w-full py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200"
               >
-                WhatsApp ilə əlaqə saxla
+                {t('boost.contactButton')}
               </button>
             </div>
           </div>
