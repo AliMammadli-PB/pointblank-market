@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
@@ -17,6 +18,8 @@ interface Account {
 
 function HomePage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [view, setView] = useState<'home' | 'ruble' | 'accounts'>('home')
   const [rubleRate, setRubleRate] = useState<number | null>(null)
   const [accounts, setAccounts] = useState<Account[]>([])
@@ -29,28 +32,68 @@ function HomePage() {
     receiptUrl: ''
   })
 
-  const handleRubleClick = async () => {
-    setLoading(true)
-    try {
-      const response = await axios.get(`${API_URL}/api/settings`)
-      setRubleRate(response.data.rubleRate)
-      setView('ruble')
-    } catch (error) {
-      console.error('Xəta:', error)
+  // URL'e göre view'i sync et
+  useEffect(() => {
+    console.log('[HOMEPAGE] URL değişti:', location.pathname, location.search)
+    const params = new URLSearchParams(location.search)
+    const viewParam = params.get('view')
+    console.log('[HOMEPAGE] View parametresi:', viewParam)
+    
+    if (viewParam === 'ruble' || viewParam === 'accounts') {
+      console.log('[HOMEPAGE] View değiştiriliyor:', viewParam)
+      setView(viewParam)
+      if (viewParam === 'ruble') {
+        console.log('[HOMEPAGE] Ruble rate yükleniyor...')
+        fetchRubleRate()
+      } else if (viewParam === 'accounts') {
+        console.log('[HOMEPAGE] Accounts yükleniyor...')
+        fetchAccounts()
+      }
+    } else {
+      console.log('[HOMEPAGE] Ana sayfaya dönülüyor...')
+      setView('home')
     }
+  }, [location.search])
+
+  const fetchRubleRate = async () => {
+    try {
+      console.log('[HOMEPAGE] API isteği: /api/settings')
+      const response = await axios.get(`${API_URL}/api/settings`)
+      console.log('[HOMEPAGE] ✅ Ruble rate yüklendi:', response.data.rubleRate)
+      setRubleRate(response.data.rubleRate)
+    } catch (error) {
+      console.error('[HOMEPAGE] ❌ Ruble rate hatası:', error)
+    }
+  }
+
+  const fetchAccounts = async () => {
+    try {
+      console.log('[HOMEPAGE] API isteği: /api/accounts')
+      const response = await axios.get(`${API_URL}/api/accounts`)
+      console.log('[HOMEPAGE] ✅ Accounts yüklendi:', response.data.length, 'hesap')
+      setAccounts(response.data)
+    } catch (error) {
+      console.error('[HOMEPAGE] ❌ Accounts hatası:', error)
+    }
+  }
+
+  const handleRubleClick = async () => {
+    console.log('[HOMEPAGE] Ruble butonuna tıklandı')
+    setLoading(true)
+    navigate('/?view=ruble')
     setLoading(false)
   }
 
   const handleAccountsClick = async () => {
+    console.log('[HOMEPAGE] Hesaplar butonuna tıklandı')
     setLoading(true)
-    try {
-      const response = await axios.get(`${API_URL}/api/accounts`)
-      setAccounts(response.data)
-      setView('accounts')
-    } catch (error) {
-      console.error('Xəta:', error)
-    }
+    navigate('/?view=accounts')
     setLoading(false)
+  }
+
+  const handleBackToHome = () => {
+    console.log('[HOMEPAGE] Geri butonuna tıklandı, ana sayfaya dönülüyor')
+    navigate('/')
   }
 
   const getYoutubeEmbedUrl = (url: string) => {
@@ -157,7 +200,7 @@ function HomePage() {
         {view === 'ruble' && (
           <div className="max-w-2xl mx-auto">
             <button
-              onClick={() => setView('home')}
+              onClick={handleBackToHome}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -184,7 +227,7 @@ function HomePage() {
         {view === 'accounts' && (
           <div className="max-w-6xl mx-auto">
             <button
-              onClick={() => setView('home')}
+              onClick={handleBackToHome}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />

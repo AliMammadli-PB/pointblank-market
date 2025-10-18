@@ -35,13 +35,19 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
     e.preventDefault()
     setError('')
     
+    console.log('[FRONTEND] Login denemesi başladı...')
+    console.log('[FRONTEND] Username:', username)
+    console.log('[FRONTEND] Captcha:', captcha, 'Girilen:', captchaInput)
+    
     // Validate captcha
     if (captchaInput !== captcha) {
+      console.log('[FRONTEND] ❌ Captcha yanlış!')
       setError('Captcha yanlışdır!')
       generateCaptcha()
       return
     }
     
+    console.log('[FRONTEND] ✓ Captcha doğru, API isteği gönderiliyor...')
     setLoading(true)
 
     try {
@@ -50,10 +56,12 @@ function AdminLogin({ setIsAuthenticated }: AdminLoginProps) {
         password,
       })
 
+      console.log('[FRONTEND] ✅ Login başarılı! Token:', response.data.token.substring(0, 30) + '...')
       localStorage.setItem('token', response.data.token)
       setIsAuthenticated(true)
       navigate('/admin/panel')
     } catch (error: any) {
+      console.error('[FRONTEND] ❌ Login hatası:', error.response?.data?.error || error.message)
       setError(error.response?.data?.error || 'Giriş xətası')
       generateCaptcha() // Generate new captcha on error
     }

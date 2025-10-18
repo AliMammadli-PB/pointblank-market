@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { Target, Star, Award, ClipboardList, ArrowLeft, MessageCircle } from 'lucide-react'
 import LanguageSelector from '../components/LanguageSelector'
@@ -13,6 +14,8 @@ interface BoostSettings {
 }
 
 function BoostPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [settings, setSettings] = useState<BoostSettings>({
     battlePassPrice: 0,
     rankPrice: 0,
@@ -28,12 +31,30 @@ function BoostPage() {
     fetchSettings()
   }, [])
 
+  // URL'den boost tipini al
+  useEffect(() => {
+    console.log('[BOOST] URL değişti:', location.pathname, location.search)
+    const params = new URLSearchParams(location.search)
+    const boostType = params.get('type')
+    console.log('[BOOST] Boost tipi:', boostType)
+    
+    if (boostType && ['battlepass', 'rank', 'rutbe', 'misya'].includes(boostType)) {
+      console.log('[BOOST] ✓ Geçerli boost tipi seçildi:', boostType)
+      setSelectedBoost(boostType)
+    } else {
+      console.log('[BOOST] Ana boost sayfasında')
+      setSelectedBoost(null)
+    }
+  }, [location.search])
+
   const fetchSettings = async () => {
     try {
+      console.log('[BOOST] API isteği: /api/boost-settings')
       const response = await axios.get(`${API_URL}/api/boost-settings`)
+      console.log('[BOOST] ✅ Boost ayarları yüklendi:', response.data)
       setSettings(response.data)
     } catch (error) {
-      console.error('Boost ayarları yüklenemedi:', error)
+      console.error('[BOOST] ❌ Boost ayarları yüklenemedi:', error)
     }
   }
 
@@ -44,29 +65,37 @@ function BoostPage() {
   }
 
   const handleBattlePassSubmit = () => {
+    console.log('[BOOST] Battle Pass submit - From:', battlePassFrom, 'To:', battlePassTo)
     if (battlePassFrom >= battlePassTo) {
+      console.log('[BOOST] ❌ Geçersiz aralık!')
       alert('Başlangıç değeri bitiş değerinden küçük olmalı!')
       return
     }
     const message = `Battle Pass Boost: ${battlePassFrom}-${battlePassTo} arası boost istiyorum. Fiyat: ${settings.battlePassPrice} manat`
+    console.log('[BOOST] ✓ WhatsApp\'a yönlendiriliyor...')
     handleWhatsApp(message)
   }
 
   const handleRankBoost = () => {
+    console.log('[BOOST] Rank boost - WhatsApp\'a yönlendiriliyor...')
     const message = `Rank için boost istiyorum. Fiyat: ${settings.rankPrice} manat`
     handleWhatsApp(message)
   }
 
   const handleRutbeSubmit = () => {
+    console.log('[BOOST] Rutbe submit - Rütbe:', rutbeName)
     if (!rutbeName.trim()) {
+      console.log('[BOOST] ❌ Rütbe adı boş!')
       alert('Lütfen rütbe ismini yazın!')
       return
     }
     const message = `Rütbe Boost: ${rutbeName} için boost istiyorum. Fiyat: ${settings.rutbePrice} manat`
+    console.log('[BOOST] ✓ WhatsApp\'a yönlendiriliyor...')
     handleWhatsApp(message)
   }
 
   const handleMisyaBoost = () => {
+    console.log('[BOOST] Misya boost - WhatsApp\'a yönlendiriliyor...')
     const message = `Misya boost istiyorum. Fiyat: ${settings.misyaPrice} manat`
     handleWhatsApp(message)
   }
@@ -98,7 +127,7 @@ function BoostPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {/* Battle Pass */}
             <div
-              onClick={() => setSelectedBoost('battlepass')}
+              onClick={() => navigate('/boost?type=battlepass')}
               className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
               <div className="mb-4 text-purple-400 flex justify-center group-hover:scale-110 transition-transform">
@@ -115,7 +144,7 @@ function BoostPage() {
 
             {/* Rank */}
             <div
-              onClick={() => setSelectedBoost('rank')}
+              onClick={() => navigate('/boost?type=rank')}
               className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
               <div className="mb-4 text-blue-400 flex justify-center group-hover:scale-110 transition-transform">
@@ -132,7 +161,7 @@ function BoostPage() {
 
             {/* Rutbe */}
             <div
-              onClick={() => setSelectedBoost('rutbe')}
+              onClick={() => navigate('/boost?type=rutbe')}
               className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
               <div className="mb-4 text-green-400 flex justify-center group-hover:scale-110 transition-transform">
@@ -149,7 +178,7 @@ function BoostPage() {
 
             {/* Misya */}
             <div
-              onClick={() => setSelectedBoost('misya')}
+              onClick={() => navigate('/boost?type=misya')}
               className="clean-card p-8 rounded-lg cursor-pointer hover:bg-white/5 text-center group transition-all"
             >
               <div className="mb-4 text-yellow-400 flex justify-center group-hover:scale-110 transition-transform">
@@ -170,7 +199,7 @@ function BoostPage() {
         {selectedBoost === 'battlepass' && (
           <div className="max-w-2xl mx-auto">
             <button
-              onClick={() => setSelectedBoost(null)}
+              onClick={() => navigate('/boost')}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -234,7 +263,7 @@ function BoostPage() {
         {selectedBoost === 'rank' && (
           <div className="max-w-2xl mx-auto">
             <button
-              onClick={() => setSelectedBoost(null)}
+              onClick={() => navigate('/boost')}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -271,7 +300,7 @@ function BoostPage() {
         {selectedBoost === 'rutbe' && (
           <div className="max-w-2xl mx-auto">
             <button
-              onClick={() => setSelectedBoost(null)}
+              onClick={() => navigate('/boost')}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -318,7 +347,7 @@ function BoostPage() {
         {selectedBoost === 'misya' && (
           <div className="max-w-2xl mx-auto">
             <button
-              onClick={() => setSelectedBoost(null)}
+              onClick={() => navigate('/boost')}
               className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={20} />

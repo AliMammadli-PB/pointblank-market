@@ -76,10 +76,12 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
 
   const loadRubleRate = async () => {
     try {
+      console.log('[ADMIN] Ruble rate yükleniyor...')
       const response = await axios.get(`${API_URL}/api/settings`)
+      console.log('[ADMIN] ✅ Ruble rate yüklendi:', response.data.rubleRate)
       setRubleRate(response.data.rubleRate.toString())
     } catch (error) {
-      console.error('Xəta:', error)
+      console.error('[ADMIN] ❌ Ruble rate hatası:', error)
     }
   }
 
@@ -89,15 +91,17 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setRubleSuccess(false)
 
     try {
+      console.log('[ADMIN] Ruble rate güncelleniyor:', rubleRate)
       await axios.put(
         `${API_URL}/api/settings`,
         { rubleRate: parseFloat(rubleRate) },
         getAuthHeaders()
       )
+      console.log('[ADMIN] ✅ Ruble rate güncellendi!')
       setRubleSuccess(true)
       setTimeout(() => setRubleSuccess(false), 3000)
     } catch (error) {
-      console.error('Xəta:', error)
+      console.error('[ADMIN] ❌ Ruble rate güncelleme hatası:', error)
     }
 
     setRubleLoading(false)
@@ -105,7 +109,9 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
 
   const loadBoostSettings = async () => {
     try {
+      console.log('[ADMIN] Boost ayarları yükleniyor...')
       const response = await axios.get(`${API_URL}/api/boost-settings`)
+      console.log('[ADMIN] ✅ Boost ayarları yüklendi:', response.data)
       setBoostSettings({
         battlePassPrice: response.data.battlePassPrice.toString(),
         rankPrice: response.data.rankPrice.toString(),
@@ -113,7 +119,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         misyaPrice: response.data.misyaPrice.toString()
       })
     } catch (error) {
-      console.error('Xəta:', error)
+      console.error('[ADMIN] ❌ Boost ayarları hatası:', error)
     }
   }
 
@@ -123,6 +129,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setBoostSuccess(false)
 
     try {
+      console.log('[ADMIN] Boost fiyatları güncelleniyor:', boostSettings)
       await axios.put(
         `${API_URL}/api/boost-settings`,
         {
@@ -133,10 +140,11 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         },
         getAuthHeaders()
       )
+      console.log('[ADMIN] ✅ Boost fiyatları güncellendi!')
       setBoostSuccess(true)
       setTimeout(() => setBoostSuccess(false), 3000)
     } catch (error) {
-      console.error('Xəta:', error)
+      console.error('[ADMIN] ❌ Boost güncelleme hatası:', error)
     }
 
     setBoostLoading(false)
@@ -145,10 +153,12 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const loadAccounts = async () => {
     setAccountsLoading(true)
     try {
+      console.log('[ADMIN] Hesaplar yükleniyor...')
       const response = await axios.get(`${API_URL}/api/accounts`)
+      console.log('[ADMIN] ✅ Hesaplar yüklendi:', response.data.length, 'hesap')
       setAccounts(response.data)
     } catch (error) {
-      console.error('Xəta:', error)
+      console.error('[ADMIN] ❌ Hesaplar yükleme hatası:', error)
     }
     setAccountsLoading(false)
   }
