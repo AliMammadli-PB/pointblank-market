@@ -71,23 +71,29 @@ function BoostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
-      <div className="absolute top-4 right-4">
+    <div className="min-h-screen animated-bg text-white relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-neon-purple rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-72 h-72 bg-neon-pink rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+      </div>
+
+      <div className="absolute top-4 right-4 z-20">
         <LanguageSelector />
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink via-neon-purple to-neon-blue">
-              Boost Xidmətləri
+        <div className="text-center mb-16 space-y-6">
+          <h1 className="text-5xl md:text-7xl font-bold float">
+            <span className="gradient-text">
+              🚀 Boost Xidmətləri
             </span>
           </h1>
-          <p className="text-gray-400 text-lg">Oyununuzu bir səviyyə yüksəldin</p>
+          <p className="text-gray-300 text-xl md:text-2xl">Oyununuzu bir səviyyə yüksəldin</p>
           <a
             href="/"
-            className="inline-block mt-4 text-neon-blue hover:text-neon-purple transition-colors"
+            className="inline-block px-6 py-3 glass hover-scale rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/20"
           >
             ← Ana səhifəyə qayıt
           </a>
@@ -99,7 +105,7 @@ function BoostPage() {
             {/* Battle Pass */}
             <div
               onClick={() => setSelectedBoost('battlepass')}
-              className="bg-gray-800/50 border-2 border-neon-purple/50 rounded-xl p-6 hover:border-neon-purple hover:shadow-neon-purple transition-all duration-300 cursor-pointer group"
+              className="glass-strong card-shine rounded-2xl p-8 border border-neon-purple/30 hover:border-neon-purple hover-scale cursor-pointer transition-all duration-500 group"
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">🎯</div>
@@ -116,7 +122,7 @@ function BoostPage() {
             {/* Rank */}
             <div
               onClick={() => setSelectedBoost('rank')}
-              className="bg-gray-800/50 border-2 border-neon-pink/50 rounded-xl p-6 hover:border-neon-pink hover:shadow-neon-pink transition-all duration-300 cursor-pointer group"
+              className="glass-strong card-shine rounded-2xl p-8 border border-neon-pink/30 hover:border-neon-pink hover-scale cursor-pointer transition-all duration-500 group"
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">⭐</div>
@@ -133,7 +139,7 @@ function BoostPage() {
             {/* Rutbe */}
             <div
               onClick={() => setSelectedBoost('rutbe')}
-              className="bg-gray-800/50 border-2 border-neon-blue/50 rounded-xl p-6 hover:border-neon-blue hover:shadow-neon-blue transition-all duration-300 cursor-pointer group"
+              className="glass-strong card-shine rounded-2xl p-8 border border-neon-blue/30 hover:border-neon-blue hover-scale cursor-pointer transition-all duration-500 group"
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">🎖️</div>
@@ -150,7 +156,7 @@ function BoostPage() {
             {/* Misya */}
             <div
               onClick={() => setSelectedBoost('misya')}
-              className="bg-gray-800/50 border-2 border-yellow-500/50 rounded-xl p-6 hover:border-yellow-500 hover:shadow-yellow transition-all duration-300 cursor-pointer group"
+              className="glass-strong card-shine rounded-2xl p-8 border border-yellow-500/30 hover:border-yellow-500 hover-scale cursor-pointer transition-all duration-500 group"
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">📋</div>
