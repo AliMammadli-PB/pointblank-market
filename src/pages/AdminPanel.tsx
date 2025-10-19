@@ -115,15 +115,18 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       console.log('[ADMIN] Boost ayarları yükleniyor...')
       const response = await axios.get(`${API_URL}/api/boost-settings`)
       console.log('[ADMIN] ✅ Boost ayarları yüklendi:', response.data)
+      console.log('[ADMIN] Raw data:', JSON.stringify(response.data, null, 2))
       setBoostSettings({
-        battlePassPrice: response.data.battlePassPrice.toString(),
-        rankPrice: response.data.rankPrice.toString(),
-        rutbePrice: response.data.rutbePrice.toString(),
-        misyaPrice: response.data.misyaPrice.toString(),
-        macroPrice: (response.data.macroPrice || 0).toString()
+        battlePassPrice: response.data.battlePassPrice?.toString() || '0',
+        rankPrice: response.data.rankPrice?.toString() || '0',
+        rutbePrice: response.data.rutbePrice?.toString() || '0',
+        misyaPrice: response.data.misyaPrice?.toString() || '0',
+        macroPrice: response.data.macroPrice?.toString() || '0'
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('[ADMIN] ❌ Boost ayarları hatası:', error)
+      console.error('[ADMIN] ❌ Error message:', error.message)
+      console.error('[ADMIN] ❌ Error response:', error.response)
     }
   }
 
@@ -132,24 +135,41 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setBoostLoading(true)
     setBoostSuccess(false)
 
+    const payload = {
+      battlePassPrice: parseFloat(boostSettings.battlePassPrice),
+      rankPrice: parseFloat(boostSettings.rankPrice),
+      rutbePrice: parseFloat(boostSettings.rutbePrice),
+      misyaPrice: parseFloat(boostSettings.misyaPrice),
+      macroPrice: parseFloat(boostSettings.macroPrice)
+    }
+
     try {
       console.log('[ADMIN] Boost fiyatları güncelleniyor:', boostSettings)
-      await axios.put(
+      console.log('[ADMIN] Payload:', JSON.stringify(payload, null, 2))
+      console.log('[ADMIN] API URL:', `${API_URL}/api/boost-settings`)
+      console.log('[ADMIN] Token:', localStorage.getItem('token')?.substring(0, 20) + '...')
+      
+      const response = await axios.put(
         `${API_URL}/api/boost-settings`,
-        {
-          battlePassPrice: parseFloat(boostSettings.battlePassPrice),
-          rankPrice: parseFloat(boostSettings.rankPrice),
-          rutbePrice: parseFloat(boostSettings.rutbePrice),
-          misyaPrice: parseFloat(boostSettings.misyaPrice),
-          macroPrice: parseFloat(boostSettings.macroPrice)
-        },
+        payload,
         getAuthHeaders()
       )
-      console.log('[ADMIN] ✅ Boost fiyatları güncellendi!')
+      
+      console.log('[ADMIN] ✅ Boost fiyatları güncellendi!', response.data)
       setBoostSuccess(true)
       setTimeout(() => setBoostSuccess(false), 3000)
-    } catch (error) {
-      console.error('[ADMIN] ❌ Boost güncelleme hatası:', error)
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Boost güncelleme hatası - FULL ERROR:', error)
+      console.error('[ADMIN] ❌ Error name:', error.name)
+      console.error('[ADMIN] ❌ Error message:', error.message)
+      console.error('[ADMIN] ❌ Error stack:', error.stack)
+      console.error('[ADMIN] ❌ Error response:', error.response)
+      console.error('[ADMIN] ❌ Response data:', error.response?.data)
+      console.error('[ADMIN] ❌ Response status:', error.response?.status)
+      console.error('[ADMIN] ❌ Response headers:', error.response?.headers)
+      
+      const errorMsg = error.response?.data?.error || error.message || 'Bilinmeyen hata'
+      alert(`Boost güncelleme hatası:\n${errorMsg}\n\nDetay için console'a bakın`)
     }
 
     setBoostLoading(false)
@@ -186,8 +206,10 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       setShowForm(false)
       setEditingAccount(null)
       loadAccounts()
-    } catch (error) {
-      console.error('Xəta:', error)
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Hesap kaydetme hatası:', error)
+      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
+      alert(`Hesap kaydetme hatası: ${error.response?.data?.error || error.message}`)
     }
   }
 
@@ -210,8 +232,10 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     try {
       await axios.delete(`${API_URL}/api/accounts/${id}`, getAuthHeaders())
       loadAccounts()
-    } catch (error) {
-      console.error('Xəta:', error)
+    } catch (error: any) {
+      console.error('[ADMIN] ❌ Hesap silme hatası:', error)
+      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
+      alert(`Hesap silme hatası: ${error.response?.data?.error || error.message}`)
     }
   }
 
