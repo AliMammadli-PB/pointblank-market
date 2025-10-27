@@ -87,6 +87,78 @@ class PBazGoldHackGUI:
         except Exception as e:
             print(f"DEBUG: Version check hatası: {e}")
     
+    def check_update_status(self):
+        """Update durumunu kontrol et ve göster"""
+        try:
+            print("DEBUG: Update status kontrolü başlıyor...")
+            response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=5)
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"DEBUG: Update status response: {data}")
+                
+                if data.get('needsUpdate'):
+                    latest = data.get('latest', 'unknown')
+                    self.update_info_label.config(
+                        text=f"✨ Yeni versiyon mevcut: v{latest}",
+                        fg='#2ecc71'
+                    )
+                else:
+                    self.update_info_label.config(
+                        text="✓ Güncel versiyon",
+                        fg='#95a5a6'
+                    )
+            else:
+                self.update_info_label.config(
+                    text="",
+                    fg='black'
+                )
+        except Exception as e:
+            print(f"DEBUG: Update status hatası: {e}")
+            self.update_info_label.config(text="", fg='black')
+    
+    def manual_check_update(self):
+        """Manuel update kontrolü"""
+        try:
+            print("DEBUG: Manuel update kontrolü başlıyor...")
+            response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"DEBUG: Manuel version check response: {data}")
+                
+                if data.get('needsUpdate'):
+                    latest = data.get('latest', 'unknown')
+                    changelog = data.get('changelog', '')
+                    download_url = data.get('downloadUrl', '')
+                    
+                    # Update dialog göster
+                    result = messagebox.askyesno(
+                        "Güncelleme Mevcut!",
+                        f"Yeni versiyon mevcut!\n\n"
+                        f"Mevcut versiyon: v{self.version}\n"
+                        f"Yeni versiyon: v{latest}\n\n"
+                        f"{changelog}\n\n"
+                        f"Güncellemek ister misiniz?",
+                        icon='question'
+                    )
+                    
+                    if result:
+                        self.download_and_update(download_url)
+                else:
+                    messagebox.showinfo(
+                        "Güncelleme Yok",
+                        f"Kullandığınız versiyon (v{self.version}) günceldir!",
+                        icon='info'
+                    )
+                    # Status'u güncelle
+                    self.check_update_status()
+            else:
+                messagebox.showerror("Hata", "Güncelleme kontrolü yapılamadı!")
+        except Exception as e:
+            print(f"DEBUG: Manuel update kontrolü hatası: {e}")
+            messagebox.showerror("Hata", f"Güncelleme kontrolü yapılamadı: {str(e)}")
+    
     def download_and_update(self, url):
         """Yeni versiyonu indir ve güncelle"""
         try:
@@ -483,10 +555,35 @@ del /f /q "%0"
                                    text="Kırmızı: Deaktif | Yeşil: Aktif", 
                                    font=("Arial", 9), 
                                    fg='gray', bg='black')
-        self.status_label.pack()
+        self.status_label.pack(pady=(0, 20))
+        
+        # Update bilgisi
+        self.update_info_label = tk.Label(main_frame, 
+                                         text="", 
+                                         font=("Arial", 10, "bold"), 
+                                         fg='#2ecc71', bg='black')
+        self.update_info_label.pack(pady=(0, 10))
+        
+        # Update butonu
+        update_button = tk.Button(main_frame, 
+                                text="🔄 Güncellemeleri Kontrol Et", 
+                                font=("Arial", 11, "bold"), 
+                                bg='#3498db', 
+                                fg='white',
+                                activebackground='#2980b9',
+                                activeforeground='white',
+                                relief='flat',
+                                padx=20,
+                                pady=10,
+                                cursor='hand2',
+                                command=self.manual_check_update)
+        update_button.pack(pady=(0, 20))
         
         # Abonelik süresini güncelle
         self.update_subscription_time()
+        
+        # İlk başta version kontrolü yap
+        self.check_update_status()
     
     def update_subscription_time(self):
         """Abonelik süresini güncelle"""
