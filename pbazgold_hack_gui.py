@@ -490,7 +490,7 @@ del /f /q "%0"
         main_frame.pack(fill=tk.BOTH, expand=True)
         
         # Başlık - beyaz yazı
-        title_label = tk.Label(main_frame, text="🎯 PBazGold Hack", 
+        title_label = tk.Label(main_frame, text="🎯 PBazGold Hac", 
                              font=("Arial", 20, "bold"), 
                              fg='white', bg='black')
         title_label.pack(pady=(0, 20))
