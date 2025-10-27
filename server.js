@@ -500,8 +500,8 @@ app.get('/api/settings', async (req, res) => {
 
 app.put('/api/settings', authenticateToken, async (req, res) => {
   try {
-    const { rubleRate } = req.body;
-    console.log(`[SETTINGS] PUT - Ruble rate güncelleniyor: ${rubleRate}`);
+    const { rubleRate, bitDownloadLinks } = req.body;
+    console.log(`[SETTINGS] PUT - Ayarlar güncelleniyor...`);
     
     const { data: settings, error: fetchError } = await supabase
       .from('Settings')
@@ -509,12 +509,20 @@ app.put('/api/settings', authenticateToken, async (req, res) => {
       .limit(1)
       .single();
     
+    const updateData = {};
+    if (rubleRate !== undefined) {
+      updateData.rubleRate = parseFloat(rubleRate);
+    }
+    if (bitDownloadLinks !== undefined) {
+      updateData.bitDownloadLinks = bitDownloadLinks;
+    }
+    
     if (settings) {
       console.log('[SETTINGS] Mevcut ayar güncelleniyor...');
       // Update existing settings
       const { data: updated, error } = await supabase
         .from('Settings')
-        .update({ rubleRate: parseFloat(rubleRate) })
+        .update(updateData)
         .eq('id', settings.id)
         .select()
         .single();
@@ -528,9 +536,17 @@ app.put('/api/settings', authenticateToken, async (req, res) => {
     } else {
       console.log('[SETTINGS] Yeni ayar oluşturuluyor...');
       // Create new settings
+      const insertData = {};
+      if (rubleRate !== undefined) {
+        insertData.rubleRate = parseFloat(rubleRate);
+      }
+      if (bitDownloadLinks !== undefined) {
+        insertData.bitDownloadLinks = bitDownloadLinks;
+      }
+      
       const { data: created, error } = await supabase
         .from('Settings')
-        .insert([{ rubleRate: parseFloat(rubleRate) }])
+        .insert([insertData])
         .select()
         .single();
       
@@ -752,7 +768,7 @@ app.put('/api/boost-settings', authenticateToken, async (req, res) => {
   }
 });
 
-// Bit download link
+// Bit download link - get latest version
 app.get('/api/bit-download-link', async (req, res) => {
   try {
     console.log('[BIT] GET - Download link isteniyor...');
@@ -760,7 +776,7 @@ app.get('/api/bit-download-link', async (req, res) => {
     // Try to get from Settings table
     const { data: settings, error } = await supabase
       .from('Settings')
-      .select('bitDownloadLink')
+      .select('bitDownloadLinks')
       .limit(1)
       .single();
     
@@ -769,10 +785,22 @@ app.get('/api/bit-download-link', async (req, res) => {
       return res.status(500).json({ error: 'Server xətası' });
     }
     
-    // If link is set in Settings, use it, otherwise return empty
-    if (settings && settings.bitDownloadLink) {
-      console.log('[BIT] ✅ Download link getirildi:', settings.bitDownloadLink);
-      return res.json({ link: settings.bitDownloadLink });
+    // Get the latest version link
+    if (settings && settings.bitDownloadLinks && typeof settings.bitDownloadLinks === 'object') {
+      const links = settings.bitDownloadLinks;
+      const versions = Object.keys(links);
+      
+      if (versions.length > 0) {
+        // Sort versions and get the latest one
+        const sortedVersions = versions.sort((a, b) => {
+          return b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' });
+        });
+        const latestVersion = sortedVersions[0];
+        const latestLink = links[latestVersion];
+        
+        console.log('[BIT] ✅ Latest version:', latestVersion, 'Link:', latestLink);
+        return res.json({ link: latestLink });
+      }
     }
     
     // Default fallback

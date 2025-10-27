@@ -23,7 +23,7 @@ interface Account {
 function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'ruble' | 'accounts' | 'boost'>('ruble')
+  const [activeTab, setActiveTab] = useState<'ruble' | 'accounts' | 'boost' | 'bit'>('ruble')
   
   // Available rank gifs (0.gif to 53.gif)
   const rankGifs = Array.from({ length: 54 }, (_, i) => `${i}.gif`)
@@ -59,6 +59,13 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     creditPercentage: '40',
   })
 
+  // Bit settings
+  const [bitLinks, setBitLinks] = useState<Record<string, string>>({})
+  const [newVersion, setNewVersion] = useState('')
+  const [newLink, setNewLink] = useState('')
+  const [bitLoading, setBitLoading] = useState(false)
+  const [bitSuccess, setBitSuccess] = useState(false)
+
   useEffect(() => {
     // Check token validity first
     const token = localStorage.getItem('token')
@@ -70,6 +77,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     loadRubleRate()
     loadAccounts()
     loadBoostSettings()
+    loadBitLinks()
   }, [])
 
   const getAuthHeaders = () => ({
@@ -252,6 +260,78 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setFormData({ name: '', description: '', rankGif: '0.gif', price: '', youtubeUrl: '', creditPercentage: '40' })
   }
 
+  const loadBitLinks = async () => {
+    try {
+      console.log('[ADMIN] Bit linkleri yükleniyor...')
+      const response = await axios.get(`${API_URL}/api/settings`)
+      console.log('[ADMIN] ✅ Bit linkleri yüklendi:', response.data.bitDownloadLinks)
+      setBitLinks(response.data.bitDownloadLinks || {})
+    } catch (error) {
+      console.error('[ADMIN] ❌ Bit linkleri hatası:', error)
+      setBitLinks({})
+    }
+  }
+
+  const handleBitAdd = async () => {
+    if (!newVersion.trim() || !newLink.trim()) {
+      alert('Versiyon ve link boş olamaz!')
+      return
+    }
+
+    setBitLoading(true)
+    setBitSuccess(false)
+
+    try {
+      const updatedLinks = {
+        ...bitLinks,
+        [newVersion]: newLink
+      }
+
+      await axios.put(
+        `${API_URL}/api/settings`,
+        { bitDownloadLinks: updatedLinks },
+        getAuthHeaders()
+      )
+
+      setBitLinks(updatedLinks)
+      setNewVersion('')
+      setNewLink('')
+      setBitSuccess(true)
+      setTimeout(() => setBitSuccess(false), 3000)
+    } catch (error) {
+      console.error('[ADMIN] ❌ Bit linki ekleme hatası:', error)
+      alert('Bit linki eklenemedi!')
+    }
+
+    setBitLoading(false)
+  }
+
+  const handleBitDelete = async (version: string) => {
+    if (!confirm(`${version} versiyonunu silmek istediğinize emin misiniz?`)) return
+
+    setBitLoading(true)
+
+    try {
+      const updatedLinks = { ...bitLinks }
+      delete updatedLinks[version]
+
+      await axios.put(
+        `${API_URL}/api/settings`,
+        { bitDownloadLinks: updatedLinks },
+        getAuthHeaders()
+      )
+
+      setBitLinks(updatedLinks)
+      setBitSuccess(true)
+      setTimeout(() => setBitSuccess(false), 3000)
+    } catch (error) {
+      console.error('[ADMIN] ❌ Bit linki silme hatası:', error)
+      alert('Bit linki silinemedi!')
+    }
+
+    setBitLoading(false)
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -315,6 +395,16 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
             }`}
           >
             {t('admin.panel.accountsTab')}
+          </button>
+          <button
+            onClick={() => setActiveTab('bit')}
+            className={`px-6 py-3 font-semibold transition-colors ${
+              activeTab === 'bit'
+                ? 'text-green-500 border-b-2 border-green-500'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            🎮 Bit Download
           </button>
         </div>
 
@@ -627,6 +717,90 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Bit Tab */}
+        {activeTab === 'bit' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gray-800/50 border-2 border-green-500/50 rounded-xl p-8">
+              <h2 className="text-2xl font-bold text-white mb-6">🎮 Bit Download Links</h2>
+
+              {bitSuccess && (
+                <div className="mb-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-400 text-sm">
+                  Bit linkler başarıyla güncellendi!
+                </div>
+              )}
+
+              {/* Add new version */}
+              <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Yeni Versiyon Ekle</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-gray-300 mb-2">Versiyon</label>
+                    <input
+                      type="text"
+                      value={newVersion}
+                      onChange={(e) => setNewVersion(e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none"
+                      placeholder="v1.0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-2">Download Link</label>
+                    <input
+                      type="url"
+                      value={newLink}
+                      onChange={(e) => setNewLink(e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={handleBitAdd}
+                      disabled={bitLoading}
+                      className="w-full py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    >
+                      {bitLoading ? 'Ekleniyor...' : 'Ekle'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Existing versions */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Mevcut Versiyonlar</h3>
+                
+                {Object.keys(bitLinks).length === 0 ? (
+                  <div className="text-center text-gray-400 py-8">
+                    Henüz versiyon eklenmemiş
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {Object.entries(bitLinks).map(([version, link]) => (
+                      <div
+                        key={version}
+                        className="flex items-center gap-4 p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <div className="font-semibold text-white mb-1">Versiyon: {version}</div>
+                          <div className="text-sm text-gray-400 break-all">{link}</div>
+                        </div>
+                        <button
+                          onClick={() => handleBitDelete(version)}
+                          disabled={bitLoading}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors text-sm"
+                        >
+                          Sil
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
