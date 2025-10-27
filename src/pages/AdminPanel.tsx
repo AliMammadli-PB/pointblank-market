@@ -272,10 +272,17 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   const loadHackUsers = async () => {
     setHackUsersLoading(true)
     try {
+      console.log('[ADMIN] Hack kullanıcıları yükleniyor...')
       const response = await axios.get(`${API_URL}/api/users`, getAuthHeaders())
+      console.log('[ADMIN] ✅ Hack kullanıcıları yüklendi:', response.data.length, 'kullanıcı')
       setHackUsers(response.data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('[ADMIN] ❌ Hack users yükleme hatası:', error)
+      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Oturum süresi doldu. Lütfen tekrar giriş yapın.')
+        handleLogout()
+      }
     }
     setHackUsersLoading(false)
   }
@@ -311,7 +318,15 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       setEditingHackUser(null)
       loadHackUsers()
     } catch (error: any) {
-      alert(`Hack kullanıcı kaydetme hatası: ${error.response?.data?.error || error.message}`)
+      console.error('[ADMIN] ❌ Hack kullanıcı kaydetme hatası:', error)
+      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
+      const errorMsg = error.response?.data?.error || error.message
+      alert(`Hack kullanıcı kaydetme hatası: ${errorMsg}`)
+      
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Oturum süresi doldu. Lütfen tekrar giriş yapın.')
+        handleLogout()
+      }
     }
   }
 
@@ -334,7 +349,14 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       await axios.delete(`${API_URL}/api/users/${id}`, getAuthHeaders())
       loadHackUsers()
     } catch (error: any) {
+      console.error('[ADMIN] ❌ Kullanıcı silme hatası:', error)
+      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
       alert(`Kullanıcı silme hatası: ${error.response?.data?.error || error.message}`)
+      
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Oturum süresi doldu. Lütfen tekrar giriş yapın.')
+        handleLogout()
+      }
     }
   }
 
