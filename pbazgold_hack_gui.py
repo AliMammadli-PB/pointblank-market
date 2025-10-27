@@ -93,7 +93,18 @@ class PBazGoldHackGUI:
             print("DEBUG: Update status kontrolü başlıyor...")
             response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=5)
             
+            print(f"DEBUG: Update status response code: {response.status_code}")
+            
             if response.status_code == 200:
+                # JSON parse etmeden önce content'i kontrol et
+                content = response.text
+                print(f"DEBUG: Response content (first 100 chars): {content[:100]}")
+                
+                # Eğer HTML dönüyorsa, API henüz deploy olmamış demektir
+                if content.strip().startswith('<!doctype') or content.strip().startswith('<html'):
+                    print("DEBUG: HTML response detected - API not deployed yet")
+                    return
+                
                 data = response.json()
                 print(f"DEBUG: Update status response: {data}")
                 
@@ -109,12 +120,15 @@ class PBazGoldHackGUI:
                         fg='#95a5a6'
                     )
             else:
+                print(f"DEBUG: Update status failed with code: {response.status_code}")
                 self.update_info_label.config(
                     text="",
                     fg='black'
                 )
         except Exception as e:
             print(f"DEBUG: Update status hatası: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
             self.update_info_label.config(text="", fg='black')
     
     def manual_check_update(self):
@@ -123,7 +137,23 @@ class PBazGoldHackGUI:
             print("DEBUG: Manuel update kontrolü başlıyor...")
             response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=10)
             
+            print(f"DEBUG: Manuel update response code: {response.status_code}")
+            
             if response.status_code == 200:
+                # JSON parse etmeden önce content'i kontrol et
+                content = response.text
+                print(f"DEBUG: Response content (first 100 chars): {content[:100]}")
+                
+                # Eğer HTML dönüyorsa, API henüz deploy olmamış demektir
+                if content.strip().startswith('<!doctype') or content.strip().startswith('<html'):
+                    print("DEBUG: HTML response detected - API not deployed yet")
+                    messagebox.showwarning(
+                        "Uyarı",
+                        "Güncelleme sistemi henüz aktif değil.\nLütfen daha sonra tekrar deneyin.",
+                        icon='warning'
+                    )
+                    return
+                
                 data = response.json()
                 print(f"DEBUG: Manuel version check response: {data}")
                 
@@ -154,9 +184,11 @@ class PBazGoldHackGUI:
                     # Status'u güncelle
                     self.check_update_status()
             else:
-                messagebox.showerror("Hata", "Güncelleme kontrolü yapılamadı!")
+                messagebox.showerror("Hata", f"Güncelleme kontrolü yapılamadı! (HTTP {response.status_code})")
         except Exception as e:
             print(f"DEBUG: Manuel update kontrolü hatası: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
             messagebox.showerror("Hata", f"Güncelleme kontrolü yapılamadı: {str(e)}")
     
     def download_and_update(self, url):
