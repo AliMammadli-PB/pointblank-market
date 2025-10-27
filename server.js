@@ -96,18 +96,58 @@ async function initializeDatabase() {
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log(`[HACK_LOGIN] ========================================`);
     console.log(`[HACK_LOGIN] Login denemesi - Kullanıcı: ${username}`);
+    console.log(`[HACK_LOGIN] ========================================`);
 
-    const { data: hackUser, error } = await supabase
-      .from('HackUsers')
+    console.log(`[HACK_LOGIN] Supabase'den kullanıcı aranıyor...`);
+    
+    // Try both uppercase and lowercase table names
+    let hackUser = null;
+    let error = null;
+    
+    const { data, error: err1 } = await supabase
+      .from('hackusers')
       .select('*')
       .eq('username', username)
       .single();
+    
+    if (err1) {
+      console.log(`[HACK_LOGIN] hackusers tablosunda bulunamadı, HackUsers deneniyor...`);
+      const { data: data2, error: err2 } = await supabase
+        .from('HackUsers')
+        .select('*')
+        .eq('username', username)
+        .single();
+      
+      hackUser = data2;
+      error = err2;
+    } else {
+      hackUser = data;
+      error = err1;
+    }
 
-    if (error || !hackUser) {
+    console.log(`[HACK_LOGIN] Supabase query tamamlandı`);
+    console.log(`[HACK_LOGIN] Error:`, error);
+    console.log(`[HACK_LOGIN] HackUser found:`, !!hackUser);
+
+    if (error) {
+      console.log(`[HACK_LOGIN] ❌ Supabase hatası: ${error.message}`);
+      console.log(`[HACK_LOGIN] ❌ Error code: ${error.code}`);
+      console.log(`[HACK_LOGIN] ❌ Error details: ${error.details}`);
+      console.log(`[HACK_LOGIN] ❌ Full error:`, JSON.stringify(error, null, 2));
+      return res.json({ success: false, message: 'İstifadəçi tapılmadı' });
+    }
+
+    if (!hackUser) {
       console.log(`[HACK_LOGIN] ❌ Kullanıcı bulunamadı: ${username}`);
       return res.json({ success: false, message: 'İstifadəçi tapılmadı' });
     }
+
+    console.log(`[HACK_LOGIN] ✅ Kullanıcı bulundu:`);
+    console.log(`[HACK_LOGIN] - ID: ${hackUser.id}`);
+    console.log(`[HACK_LOGIN] - Username: ${hackUser.username}`);
+    console.log(`[HACK_LOGIN] - Is active: ${hackUser.is_active}`);
 
     // Check if user is active
     if (!hackUser.is_active) {
@@ -115,7 +155,9 @@ app.post('/api/login', async (req, res) => {
       return res.json({ success: false, message: 'Hesabınız pasif durumda! Admin ile iletişime geçin.' });
     }
 
+    console.log(`[HACK_LOGIN] Şifre kontrolü yapılıyor...`);
     const isValidPassword = await bcrypt.compare(password, hackUser.password);
+    console.log(`[HACK_LOGIN] Şifre doğru mu: ${isValidPassword}`);
     
     if (!isValidPassword) {
       console.log(`[HACK_LOGIN] ❌ Şifre yanlış - Kullanıcı: ${username}`);
@@ -124,6 +166,7 @@ app.post('/api/login', async (req, res) => {
 
     const token = jwt.sign({ id: hackUser.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     console.log(`[HACK_LOGIN] ✅ Login başarılı - Kullanıcı: ${username}`);
+    console.log(`[HACK_LOGIN] Token oluşturuldu (ilk 30): ${token.substring(0, 30)}...`);
     
     res.json({ 
       success: true,
@@ -135,8 +178,10 @@ app.post('/api/login', async (req, res) => {
         subscription_end: hackUser.subscription_end
       }
     });
+    console.log(`[HACK_LOGIN] ========================================`);
   } catch (error) {
     console.error('[HACK_LOGIN] ❌ Login hatası:', error);
+    console.error('[HACK_LOGIN] ❌ Error stack:', error.stack);
     res.json({ success: false, message: 'Server xətası' });
   }
 });

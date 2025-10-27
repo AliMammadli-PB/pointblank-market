@@ -134,25 +134,47 @@ class PBazGoldHackGUI:
         
         # API'ye login isteği
         try:
-            print(f"DEBUG: Sending login request to {self.api_url}/login")
+            print(f"DEBUG: ========================================")
+            print(f"DEBUG: LOGIN REQUEST DETAILS")
+            print(f"DEBUG: ========================================")
+            print(f"DEBUG: API URL: {self.api_url}")
+            print(f"DEBUG: Full endpoint: {self.api_url}/login")
+            print(f"DEBUG: Username: {username}")
+            print(f"DEBUG: Password length: {len(password)}")
+            print(f"DEBUG: Request payload: {{'username': '{username}', 'password': '***'}}")
+            print(f"DEBUG: ========================================")
+            
             response = requests.post(f"{self.api_url}/login", 
                                    json={"username": username, "password": password},
                                    timeout=10)
             
-            print(f"DEBUG: Login response status: {response.status_code}")
-            print(f"DEBUG: Login response headers: {dict(response.headers)}")
+            print(f"DEBUG: ========================================")
+            print(f"DEBUG: RESPONSE DETAILS")
+            print(f"DEBUG: ========================================")
+            print(f"DEBUG: Response status: {response.status_code}")
+            print(f"DEBUG: Response headers: {dict(response.headers)}")
+            print(f"DEBUG: Response content length: {len(response.content)}")
+            print(f"DEBUG: ========================================")
             
             data = response.json()
-            try:
-                print(f"DEBUG: Login response data: {data}")
-            except UnicodeEncodeError:
-                print("DEBUG: Login response data: [Unicode error - data received]")
+            
+            print(f"DEBUG: Parsed JSON data:")
+            print(f"DEBUG: - success: {data.get('success')}")
+            print(f"DEBUG: - message: {data.get('message')}")
+            print(f"DEBUG: - token exists: {'token' in data}")
+            print(f"DEBUG: - user exists: {'user' in data}")
+            
+            if 'user' in data:
+                print(f"DEBUG: - user data: {data.get('user')}")
+            
+            print(f"DEBUG: ========================================")
             
             if data.get('success'):
                 self.auth_token = data.get('token')
                 self.is_logged_in = True
                 self.current_user = data.get('user', {})
-                print(f"DEBUG: Login successful - Token: {self.auth_token[:20]}...")
+                print(f"DEBUG: ✅ LOGIN SUCCESSFUL")
+                print(f"DEBUG: Token (first 30): {self.auth_token[:30]}...")
                 print(f"DEBUG: User data: {self.current_user}")
                 self.status_label.config(text="✅ Giriş başarılı!", fg='green')
                 self.root.update()
@@ -160,7 +182,8 @@ class PBazGoldHackGUI:
                 self.create_gui()
                 self.setup_hotkeys()
             else:
-                print(f"DEBUG: Login failed - {data.get('message', 'Unknown error')}")
+                print(f"DEBUG: ❌ LOGIN FAILED")
+                print(f"DEBUG: Reason: {data.get('message', 'Unknown error')}")
                 self.status_label.config(text=f"❌ {data.get('message', 'Giriş başarısız')}", fg='red')
                 
         except requests.exceptions.ConnectionError as e:
