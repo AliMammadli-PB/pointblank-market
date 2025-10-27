@@ -190,22 +190,64 @@ app.post('/api/verify', async (req, res) => {
   try {
     const { token } = req.body;
     
+    console.log(`[HACK_VERIFY] ========================================`);
+    console.log(`[HACK_VERIFY] Verify request received`);
+    console.log(`[HACK_VERIFY] Token exists: ${!!token}`);
+    
     if (!token) {
+      console.log(`[HACK_VERIFY] ❌ Token yok`);
       return res.json({ success: false, message: 'Token yoxdur' });
     }
 
+    console.log(`[HACK_VERIFY] Token decrypt ediliyor...`);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(`[HACK_VERIFY] Decoded token:`, decoded);
+    console.log(`[HACK_VERIFY] User ID from token:`, decoded.id);
     
-    const { data: hackUser, error } = await supabase
-      .from('HackUsers')
+    // Try both lowercase and uppercase table names
+    console.log(`[HACK_VERIFY] Supabase'den kullanıcı aranıyor (ID: ${decoded.id})...`);
+    
+    let hackUser = null;
+    let error = null;
+    
+    const { data, error: err1 } = await supabase
+      .from('hackusers')
       .select('*')
       .eq('id', decoded.id)
       .single();
+    
+    console.log(`[HACK_VERIFY] hackusers query sonucu:`, { data, error: err1 });
+    
+    if (err1) {
+      console.log(`[HACK_VERIFY] hackusers tablosunda bulunamadı, HackUsers deneniyor...`);
+      const { data: data2, error: err2 } = await supabase
+        .from('HackUsers')
+        .select('*')
+        .eq('id', decoded.id)
+        .single();
+      
+      console.log(`[HACK_VERIFY] HackUsers query sonucu:`, { data: data2, error: err2 });
+      
+      hackUser = data2;
+      error = err2;
+    } else {
+      hackUser = data;
+      error = err1;
+    }
+
+    console.log(`[HACK_VERIFY] Final result - HackUser found:`, !!hackUser);
+    console.log(`[HACK_VERIFY] Final result - Error:`, error);
 
     if (error || !hackUser) {
+      console.log(`[HACK_VERIFY] ❌ Kullanıcı bulunamadı`);
+      if (error) {
+        console.log(`[HACK_VERIFY] Error details:`, JSON.stringify(error, null, 2));
+      }
       return res.json({ success: false, message: 'İstifadəçi tapılmadı' });
     }
 
+    console.log(`[HACK_VERIFY] ✅ Kullanıcı bulundu:`, hackUser.username);
+    
     res.json({ 
       success: true,
       user: {
@@ -215,8 +257,11 @@ app.post('/api/verify', async (req, res) => {
         subscription_end: hackUser.subscription_end
       }
     });
+    
+    console.log(`[HACK_VERIFY] ========================================`);
   } catch (error) {
     console.error('[HACK_VERIFY] ❌ Verify hatası:', error);
+    console.error('[HACK_VERIFY] ❌ Error stack:', error.stack);
     res.json({ success: false, message: 'Token etibarsızdır' });
   }
 });
