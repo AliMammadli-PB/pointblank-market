@@ -420,7 +420,7 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
     const { error } = await supabase
       .from('hackusers')
       .delete()
-      .eq('id', id);
+      .eq('id', parseInt(id));
     
     if (error) {
       console.log('[HACK_USERS] ❌ Kullanıcı silinemedi:', error.message);
