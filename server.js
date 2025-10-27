@@ -92,7 +92,200 @@ async function initializeDatabase() {
 
 // API Routes
 
-// Auth routes
+// PYTHON HACK AUTH ENDPOINTS
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    console.log(`[HACK_LOGIN] Login denemesi - Kullanıcı: ${username}`);
+
+    const { data: hackUser, error } = await supabase
+      .from('HackUsers')
+      .select('*')
+      .eq('username', username)
+      .single();
+
+    if (error || !hackUser) {
+      console.log(`[HACK_LOGIN] ❌ Kullanıcı bulunamadı: ${username}`);
+      return res.json({ success: false, message: 'İstifadəçi tapılmadı' });
+    }
+
+    // Check if user is active
+    if (!hackUser.is_active) {
+      console.log(`[HACK_LOGIN] ❌ Kullanıcı pasif durumda: ${username}`);
+      return res.json({ success: false, message: 'Hesabınız pasif durumda! Admin ile iletişime geçin.' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, hackUser.password);
+    
+    if (!isValidPassword) {
+      console.log(`[HACK_LOGIN] ❌ Şifre yanlış - Kullanıcı: ${username}`);
+      return res.json({ success: false, message: 'Şifrə yanlışdır' });
+    }
+
+    const token = jwt.sign({ id: hackUser.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    console.log(`[HACK_LOGIN] ✅ Login başarılı - Kullanıcı: ${username}`);
+    
+    res.json({ 
+      success: true,
+      token,
+      user: {
+        id: hackUser.id,
+        username: hackUser.username,
+        is_active: hackUser.is_active,
+        subscription_end: hackUser.subscription_end
+      }
+    });
+  } catch (error) {
+    console.error('[HACK_LOGIN] ❌ Login hatası:', error);
+    res.json({ success: false, message: 'Server xətası' });
+  }
+});
+
+app.post('/api/verify', async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    if (!token) {
+      return res.json({ success: false, message: 'Token yoxdur' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const { data: hackUser, error } = await supabase
+      .from('HackUsers')
+      .select('*')
+      .eq('id', decoded.id)
+      .single();
+
+    if (error || !hackUser) {
+      return res.json({ success: false, message: 'İstifadəçi tapılmadı' });
+    }
+
+    res.json({ 
+      success: true,
+      user: {
+        id: hackUser.id,
+        username: hackUser.username,
+        is_active: hackUser.is_active,
+        subscription_end: hackUser.subscription_end
+      }
+    });
+  } catch (error) {
+    console.error('[HACK_VERIFY] ❌ Verify hatası:', error);
+    res.json({ success: false, message: 'Token etibarsızdır' });
+  }
+});
+
+app.get('/api/users', authenticateToken, async (req, res) => {
+  try {
+    console.log('[HACK_USERS] GET - Kullanıcılar listeleniyor...');
+    const { data: hackUsers, error } = await supabase
+      .from('HackUsers')
+      .select('*')
+      .order('id', { ascending: false });
+    
+    if (error) {
+      console.log('[HACK_USERS] ❌ Kullanıcılar getirilemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    console.log(`[HACK_USERS] ✅ ${hackUsers.length} kullanıcı getirildi`);
+    res.json(hackUsers);
+  } catch (error) {
+    console.error('[HACK_USERS] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
+app.post('/api/users', authenticateToken, async (req, res) => {
+  try {
+    const { username, password, is_active, subscription_end } = req.body;
+    console.log('[HACK_USERS] POST - Yeni kullanıcı ekleniyor...', username);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const { data, error } = await supabase
+      .from('HackUsers')
+      .insert([{
+        username,
+        password: hashedPassword,
+        is_active,
+        subscription_end
+      }])
+      .select()
+      .single();
+    
+    if (error) {
+      console.log('[HACK_USERS] ❌ Kullanıcı eklenemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    console.log('[HACK_USERS] ✅ Kullanıcı eklendi:', data.id);
+    res.json(data);
+  } catch (error) {
+    console.error('[HACK_USERS] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
+app.put('/api/users/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, password, is_active, subscription_end } = req.body;
+    console.log('[HACK_USERS] PUT - Kullanıcı güncelleniyor...', id);
+
+    const updateData = { username, is_active, subscription_end };
+    
+    // Only update password if provided
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const { data, error } = await supabase
+      .from('HackUsers')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.log('[HACK_USERS] ❌ Kullanıcı güncellenemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    console.log('[HACK_USERS] ✅ Kullanıcı güncellendi:', data.id);
+    res.json(data);
+  } catch (error) {
+    console.error('[HACK_USERS] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
+app.delete('/api/users/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log('[HACK_USERS] DELETE - Kullanıcı siliniyor...', id);
+
+    const { error } = await supabase
+      .from('HackUsers')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.log('[HACK_USERS] ❌ Kullanıcı silinemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    console.log('[HACK_USERS] ✅ Kullanıcı silindi:', id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[HACK_USERS] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
+// Auth routes (Admin Panel)
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
