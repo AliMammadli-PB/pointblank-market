@@ -110,10 +110,17 @@ class PBazGoldHackGUI:
                 
                 if data.get('needsUpdate'):
                     latest = data.get('latest', 'unknown')
-                    self.update_info_label.config(
-                        text=f"✨ Yeni versiyon mevcut: v{latest}",
-                        fg='#2ecc71'
-                    )
+                    current = data.get('current', 'unknown')
+                    # Version numaralarını sayısal olarak karşılaştır
+                    current_parts = [int(x) for x in current.split('.')]
+                    latest_parts = [int(x) for x in latest.split('.')]
+                    needs_update = latest_parts > current_parts
+                    
+                    if needs_update:
+                        self.update_info_label.config(
+                            text=f"✨ Yeni versiyon mevcut: v{latest}",
+                            fg='#2ecc71'
+                        )
                 else:
                     self.update_info_label.config(
                         text="✓ Güncel versiyon",
