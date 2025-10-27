@@ -16,6 +16,15 @@ function App() {
     setIsAuthenticated(!!token)
   }, [])
 
+  // Check authentication on route change
+  const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return <Navigate to="/admin/login" />
+    }
+    return <>{children}</>
+  }
+
   return (
     <LanguageProvider>
       <Router>
@@ -34,17 +43,17 @@ function App() {
           <Route 
             path="/admin/panel" 
             element={
-              isAuthenticated ? 
-              <AdminPanel setIsAuthenticated={setIsAuthenticated} /> : 
-              <Navigate to="/admin/login" />
+              <RequireAuth>
+                <AdminPanel setIsAuthenticated={setIsAuthenticated} />
+              </RequireAuth>
             } 
           />
           <Route 
             path="/panda/panda" 
             element={
-              isAuthenticated ? 
-              <HackAdminPanel /> : 
-              <Navigate to="/admin/login" />
+              <RequireAuth>
+                <HackAdminPanel />
+              </RequireAuth>
             } 
           />
         </Routes>
