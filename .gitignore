@@ -7,7 +7,6 @@ node_modules
 # Python hack files - Gizlilik için
 *.pyc
 __pycache__/
-*.spec
 build/
 sound_on.wav
 sound_off.wav
@@ -16,3 +15,8 @@ sound_off.wav
 dist/
 *.exe
 *.spec
+
+# Panda depo - exe dosyaları dahil edilecek
+panda-depo/**/*
+!panda-depo/**/*.exe
+!panda-depo/**/.gitkeep

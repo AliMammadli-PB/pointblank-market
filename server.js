@@ -35,6 +35,9 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
 }
 
+// Serve Panda depo files
+app.use('/panda/depo', express.static(path.join(__dirname, 'panda-depo')));
+
 // Auth middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -100,10 +103,14 @@ app.get('/api/hack-version', async (req, res) => {
     
     // Current version
     const currentVersion = "1.5.0";
-    const downloadUrl = "https://github.com/AliMammadli-PB/pb/releases/download/v1.5.0/pbazgold_hack.exe";
+    
+    // Depo URL'si - backend'den statik dosya olarak serve edilecek
+    const downloadUrl = "/panda/depo/v1.5.0/pbazgold_hack.exe";
     const changelog = "v1.5.0 - Otomatik güncelleme sistemi\n- Manuel güncelleme butonu\n- Güncelleme bildirimi\n- Performans iyileştirmeleri";
     
     const needsUpdate = version !== currentVersion;
+    
+    console.log(`[HACK_VERSION] Version: ${currentVersion}, Needs Update: ${needsUpdate}`);
     
     res.json({
       current: currentVersion,
