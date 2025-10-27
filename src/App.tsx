@@ -4,6 +4,7 @@ import BoostPage from './pages/BoostPage'
 import MacroPage from './pages/MacroPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminPanel from './pages/AdminPanel'
+import HackAdminPanel from './pages/HackAdminPanel'
 import { useState, useEffect } from 'react'
 import { LanguageProvider } from './context/LanguageContext'
 
@@ -35,6 +36,14 @@ function App() {
             element={
               isAuthenticated ? 
               <AdminPanel setIsAuthenticated={setIsAuthenticated} /> : 
+              <Navigate to="/admin/login" />
+            } 
+          />
+          <Route 
+            path="/panda/panda" 
+            element={
+              isAuthenticated ? 
+              <HackAdminPanel /> : 
               <Navigate to="/admin/login" />
             } 
           />
