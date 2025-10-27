@@ -32,7 +32,7 @@ class PBazGoldHackGUI:
         self.api_url = "https://pointblank-market.onrender.com/api"  # Production
         
         # Version sistemi
-        self.version = "1.0.0"
+        self.version = "1.0.0"  # Eski sürüm için test
         
         # Hack objesi
         self.hack = PBazGoldHack()
@@ -91,27 +91,56 @@ class PBazGoldHackGUI:
         """Yeni versiyonu indir ve güncelle"""
         try:
             print(f"DEBUG: İndirme başlıyor: {url}")
-            messagebox.showinfo("Güncelleme", "Güncelleme indiriliyor...")
+            messagebox.showinfo("Güncelleme", "Güncelleme indiriliyor... Lütfen bekleyin.")
             
             # İndirme
-            response = requests.get(url, stream=True)
+            response = requests.get(url, stream=True, timeout=30)
             response.raise_for_status()
             
             # Temp dizin
             temp_dir = tempfile.gettempdir()
-            exe_path = os.path.join(temp_dir, "pbazgold_hack_update.exe")
+            new_exe_path = os.path.join(temp_dir, "pbazgold_hack_new.exe")
             
-            with open(exe_path, 'wb') as f:
+            # Yeni exe'yi indir
+            with open(new_exe_path, 'wb') as f:
+                total_size = int(response.headers.get('content-length', 0))
+                downloaded = 0
+                
                 for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if total_size > 0:
+                            percent = (downloaded / total_size) * 100
+                            print(f"DEBUG: İndiriliyor: {percent:.1f}%")
             
-            print(f"DEBUG: İndirme tamamlandı: {exe_path}")
+            print(f"DEBUG: İndirme tamamlandı: {new_exe_path}")
             
-            # Çalıştır ve kapat
-            messagebox.showinfo("Güncelleme", "Güncelleme indirildi. Program kapanıyor...")
+            # Mevcut exe yolunu al
+            current_exe = sys.executable if hasattr(sys, '_MEIPASS') else sys.argv[0]
             
-            # Yeni exe'yi çalıştır
-            subprocess.Popen([exe_path])
+            # Batch dosyası oluştur (eski exe'yi sil ve yenisini çalıştır)
+            batch_content = f'''@echo off
+timeout /t 2 /nobreak > nul
+del /f /q "{current_exe}"
+ren "{new_exe_path}" pbazgold_hack.exe
+move "{temp_dir}\\pbazgold_hack.exe" "{os.path.dirname(current_exe)}"
+start "" "{os.path.dirname(current_exe)}\\pbazgold_hack.exe"
+del /f /q "%0"
+'''
+            
+            batch_path = os.path.join(temp_dir, "update.bat")
+            with open(batch_path, 'w', encoding='utf-8') as f:
+                f.write(batch_content)
+            
+            print(f"DEBUG: Batch dosyası oluşturuldu: {batch_path}")
+            print(f"DEBUG: Eski exe: {current_exe}")
+            
+            # Batch'i çalıştır ve mevcut programı kapat
+            messagebox.showinfo("Güncelleme", "Güncelleme tamamlandı! Program yeniden başlatılıyor...")
+            
+            # Batch dosyasını çalıştır
+            subprocess.Popen([batch_path], shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
             
             # Mevcut programı kapat
             self.root.quit()
@@ -119,6 +148,8 @@ class PBazGoldHackGUI:
             
         except Exception as e:
             print(f"DEBUG: Update hatası: {e}")
+            import traceback
+            traceback.print_exc()
             messagebox.showerror("Hata", f"Güncelleme indirilemedi: {str(e)}")
     
     def show_login_dialog(self):

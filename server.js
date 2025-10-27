@@ -99,9 +99,9 @@ app.get('/api/hack-version', async (req, res) => {
     console.log(`[HACK_VERSION] Versiyon kontrolü - Client: ${version}`);
     
     // Current version
-    const currentVersion = "1.0.0";
-    const downloadUrl = "https://github.com/your-repo/releases/latest/pbazgold_hack.exe";
-    const changelog = "v1.0.0 - İlk sürüm";
+    const currentVersion = "1.1.0";
+    const downloadUrl = "https://github.com/AliMammadli-PB/pb/releases/download/v1.1.0/pbazgold_hack.exe";
+    const changelog = "v1.1.0 - Auto-update sistemi eklendi\n- Otomatik güncelleme desteği\n- Daha hızlı başlatma\n- Bug fixler";
     
     const needsUpdate = version !== currentVersion;
     
