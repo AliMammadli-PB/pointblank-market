@@ -417,7 +417,18 @@ class PBazGoldHackGUI:
                 if subscription_end:
                     # Subscription end tarihini parse et
                     from datetime import datetime, timezone
-                    end_date = datetime.fromisoformat(subscription_end.replace('Z', '+00:00'))
+                    # Fix datetime format for parsing
+                    date_str = subscription_end.replace('Z', '+00:00')
+                    # Handle microseconds - add zeros if needed
+                    if '.' in date_str and '+' in date_str:
+                        parts = date_str.split('.')
+                        if len(parts) == 2:
+                            microsec_part, tz_part = parts[1].split('+')
+                            if len(microsec_part) < 6:
+                                microsec_part = microsec_part.ljust(6, '0')
+                            date_str = f"{parts[0]}.{microsec_part}+{tz_part}"
+                    
+                    end_date = datetime.fromisoformat(date_str)
                     now = datetime.now(timezone.utc)
                     
                     print(f"DEBUG: End date: {end_date}")
@@ -554,7 +565,19 @@ class PBazGoldHackGUI:
                 
                 if subscription_end:
                     from datetime import datetime, timezone
-                    end_date = datetime.fromisoformat(subscription_end.replace('Z', '+00:00'))
+                    
+                    # Fix datetime format for parsing
+                    date_str = subscription_end.replace('Z', '+00:00')
+                    # Handle microseconds - add zeros if needed
+                    if '.' in date_str and '+' in date_str:
+                        parts = date_str.split('.')
+                        if len(parts) == 2:
+                            microsec_part, tz_part = parts[1].split('+')
+                            if len(microsec_part) < 6:
+                                microsec_part = microsec_part.ljust(6, '0')
+                            date_str = f"{parts[0]}.{microsec_part}+{tz_part}"
+                    
+                    end_date = datetime.fromisoformat(date_str)
                     now = datetime.now(timezone.utc)
                     
                     if end_date > now:
