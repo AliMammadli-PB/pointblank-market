@@ -92,6 +92,8 @@ const translations: Record<Language, any> = {
       boostDesc: 'Səviyyə yüksəltmə',
       macroTitle: 'Macro',
       macroDesc: 'Oyun makroları',
+      bitTitle: 'Bit',
+      bitDesc: 'Oyun hack indir',
       adminLogin: 'Admin girişi',
     },
     ruble: {
@@ -183,6 +185,15 @@ const translations: Record<Language, any> = {
       damageFileLabel: 'İlave hasar verən fayl',
       priceLabel: 'Qiymət',
     },
+    bit: {
+      title: 'PBAZGOLD',
+      gameName: 'PBAZGOLD',
+      description: 'PointBlank AZ hack indir və istifadə et',
+      download: 'Yüklə',
+      buy: 'Satın Al',
+      purchaseRequest: 'Bit Alış Tələbi',
+      requestingCode: 'Kod almaq istəyirəm',
+    },
     admin: {
       login: {
         title: 'Giriş',
@@ -245,6 +256,8 @@ const translations: Record<Language, any> = {
       boostDesc: 'Seviye yükseltme',
       macroTitle: 'Macro',
       macroDesc: 'Oyun makroları',
+      bitTitle: 'Bit',
+      bitDesc: 'Oyun hack indir',
       adminLogin: 'Admin girişi',
     },
     ruble: {
@@ -336,6 +349,15 @@ const translations: Record<Language, any> = {
       damageFileLabel: 'İlave hasar veren dosya',
       priceLabel: 'Fiyat',
     },
+    bit: {
+      title: 'PBAZGOLD',
+      gameName: 'PBAZGOLD',
+      description: 'PointBlank AZ hack indir ve kullan',
+      download: 'İndir',
+      buy: 'Satın Al',
+      purchaseRequest: 'Bit Satın Alma Talebi',
+      requestingCode: 'Kod almak istiyorum',
+    },
     admin: {
       login: {
         title: 'Giriş',
@@ -398,6 +420,8 @@ const translations: Record<Language, any> = {
       boostDesc: 'Повышение уровня',
       macroTitle: 'Макрос',
       macroDesc: 'Игровые макросы',
+      bitTitle: 'Bit',
+      bitDesc: 'Скачать игру хак',
       adminLogin: 'Вход администратора',
     },
     ruble: {
@@ -488,6 +512,15 @@ const translations: Record<Language, any> = {
       whatsappTitle: 'Запрос на Макрос',
       damageFileLabel: 'Дополнительный файл урона',
       priceLabel: 'Цена',
+    },
+    bit: {
+      title: 'PBAZGOLD',
+      gameName: 'PBAZGOLD',
+      description: 'Скачать и использовать PointBlank AZ hack',
+      download: 'Скачать',
+      buy: 'Купить',
+      purchaseRequest: 'Запрос на Покупку Bit',
+      requestingCode: 'Я хочу получить код',
     },
     admin: {
       login: {

@@ -752,6 +752,38 @@ app.put('/api/boost-settings', authenticateToken, async (req, res) => {
   }
 });
 
+// Bit download link
+app.get('/api/bit-download-link', async (req, res) => {
+  try {
+    console.log('[BIT] GET - Download link isteniyor...');
+    
+    // Try to get from Settings table
+    const { data: settings, error } = await supabase
+      .from('Settings')
+      .select('bitDownloadLink')
+      .limit(1)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      console.log('[BIT] ❌ Ayarlar getirilemedi:', error.message);
+      return res.status(500).json({ error: 'Server xətası' });
+    }
+    
+    // If link is set in Settings, use it, otherwise return empty
+    if (settings && settings.bitDownloadLink) {
+      console.log('[BIT] ✅ Download link getirildi:', settings.bitDownloadLink);
+      return res.json({ link: settings.bitDownloadLink });
+    }
+    
+    // Default fallback
+    console.log('[BIT] ⚠️ Download link yok, empty response');
+    res.json({ link: '' });
+  } catch (error) {
+    console.error('[BIT] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
 // Serve frontend for all other routes (in production)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {

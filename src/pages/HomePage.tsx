@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
-import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart, Zap } from 'lucide-react'
+import { DollarSign, TrendingUp, Gamepad2, ArrowLeft, ShoppingCart, Zap, Download, Wallet } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import LanguageSelector from '../components/LanguageSelector'
 
@@ -26,7 +26,7 @@ function HomePage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
-  const [view, setView] = useState<'home' | 'ruble' | 'accounts'>('home')
+  const [view, setView] = useState<'home' | 'ruble' | 'accounts' | 'bit'>('home')
   const [rubleRate, setRubleRate] = useState<number | null>(null)
   const [accounts, setAccounts] = useState<Account[]>([])
   const [loading, setLoading] = useState(false)
@@ -195,7 +195,7 @@ function HomePage() {
               <p className="text-gray-400 text-lg">{t('home.selectOption')}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Rubl */}
               <button
                 onClick={handleRubleClick}
@@ -244,6 +244,21 @@ function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">{t('home.accountsTitle')}</h3>
                 <p className="text-gray-400 text-sm">{t('home.accountsDesc')}</p>
+              </button>
+
+              {/* Bit */}
+              <button
+                onClick={() => {
+                  setView('bit')
+                  setLoading(false)
+                }}
+                className="clean-card p-8 rounded-lg hover:bg-white/5 text-left group transition-all"
+              >
+                <div className="mb-4 text-green-400 group-hover:scale-110 transition-transform inline-block">
+                  <Download size={40} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.bitTitle')}</h3>
+                <p className="text-gray-400 text-sm">{t('home.bitDesc')}</p>
               </button>
             </div>
           </div>
@@ -352,6 +367,65 @@ function HomePage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {view === 'bit' && (
+          <div className="max-w-4xl mx-auto">
+            <button
+              onClick={handleBackToHome}
+              className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
+            >
+              <ArrowLeft size={20} />
+              {t('common.back')}
+            </button>
+
+            <div className="clean-card rounded-lg p-10">
+              <h2 className="text-3xl font-bold text-white mb-6 text-center">{t('bit.title')}</h2>
+              
+              <div className="mb-8">
+                <div className="bg-white/5 rounded-lg p-6 mb-6">
+                  <h3 className="text-xl font-semibold text-white mb-2">{t('bit.gameName')}</h3>
+                  <p className="text-gray-400">{t('bit.description')}</p>
+                </div>
+
+                <div className="space-y-4">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await axios.get(`${API_URL}/api/bit-download-link`)
+                        if (response.data.link) {
+                          window.open(response.data.link, '_blank')
+                        } else {
+                          alert('Download link not available')
+                        }
+                      } catch (error) {
+                        console.error('[BIT] Download link hatası:', error)
+                        alert('Download link could not be fetched')
+                      }
+                    }}
+                    className="w-full py-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Download size={24} />
+                    {t('bit.download')}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const message = `*${t('bit.purchaseRequest')}*\n\n` +
+                        `*Oyun:* PBAZGOLD\n` +
+                        `*İstifadəçi kodu:* ${t('bit.requestingCode')}`
+                      const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
+                      window.open(whatsappUrl, '_blank')
+                    }}
+                    className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Wallet size={24} />
+                    {t('bit.buy')}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
