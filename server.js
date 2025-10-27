@@ -101,7 +101,7 @@ app.get('/api/hack-version', async (req, res) => {
     // Current version
     const currentVersion = "1.5.0";
     const downloadUrl = "https://github.com/AliMammadli-PB/pb/releases/download/v1.5.0/pbazgold_hack.exe";
-    const changelog = "v1.5.0 - Auto-update sistemi eklendi\n- Otomatik güncelleme desteği\n- Daha hızlı başlatma\n- Bug fixler";
+    const changelog = "v1.5.0 - Otomatik güncelleme sistemi\n- Manuel güncelleme butonu\n- Güncelleme bildirimi\n- Performans iyileştirmeleri";
     
     const needsUpdate = version !== currentVersion;
     
