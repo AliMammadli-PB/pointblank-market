@@ -13,10 +13,10 @@ sound_off.wav
 
 # Python compiled files
 dist/
-*.exe
 *.spec
 
-# Panda depo - exe dosyaları dahil edilecek
+# Panda depo - ÖZEL KURAL: sadece panda-depo klasöründeki exe'ler dahil edilecek
 panda-depo/**/*
 !panda-depo/**/*.exe
 !panda-depo/**/.gitkeep
+!panda-depo/**/README.md
