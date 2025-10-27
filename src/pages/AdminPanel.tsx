@@ -82,11 +82,29 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
   })
 
   useEffect(() => {
+    // Check token validity first
+    const token = localStorage.getItem('token')
+    if (!token) {
+      handleLogout()
+      return
+    }
+
     loadRubleRate()
     loadAccounts()
     loadBoostSettings()
-    loadHackUsers()
+    
+    // Load hack users only if tab is active
+    if (activeTab === 'hack') {
+      loadHackUsers()
+    }
   }, [])
+
+  // Reload hack users when tab changes to hack
+  useEffect(() => {
+    if (activeTab === 'hack' && hackUsers.length === 0) {
+      loadHackUsers()
+    }
+  }, [activeTab])
 
   const getAuthHeaders = () => ({
     headers: {
