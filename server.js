@@ -92,6 +92,32 @@ async function initializeDatabase() {
 
 // API Routes
 
+// PYTHON HACK VERSION CHECK
+app.get('/api/hack-version', async (req, res) => {
+  try {
+    const { version } = req.query;
+    console.log(`[HACK_VERSION] Versiyon kontrolü - Client: ${version}`);
+    
+    // Current version
+    const currentVersion = "1.0.0";
+    const downloadUrl = "https://github.com/your-repo/releases/latest/pbazgold_hack.exe";
+    const changelog = "v1.0.0 - İlk sürüm";
+    
+    const needsUpdate = version !== currentVersion;
+    
+    res.json({
+      current: currentVersion,
+      latest: currentVersion,
+      needsUpdate,
+      downloadUrl,
+      changelog
+    });
+  } catch (error) {
+    console.error('[HACK_VERSION] ❌ Hata:', error);
+    res.status(500).json({ error: 'Server xətası' });
+  }
+});
+
 // PYTHON HACK AUTH ENDPOINTS
 app.post('/api/login', async (req, res) => {
   try {

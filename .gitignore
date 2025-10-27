@@ -3,3 +3,11 @@ node_modules
 *.db
 *.db-journal
 .DS_Store
+
+# Python hack files
+pbazgold_hack_gui.py
+*.pyc
+__pycache__/
+*.spec
+sound_on.wav
+sound_off.wav

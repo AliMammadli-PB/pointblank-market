@@ -4,19 +4,23 @@ import time
 import ctypes
 import threading
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import pygame
 import os
 from ctypes import wintypes
 import requests
 import json
 import socket
+import subprocess
+import sys
+import tempfile
+import shutil
 
 class PBazGoldHackGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("PBazGold Hack")
-        self.root.geometry("500x800")
+        self.root.geometry("500x500")
         self.root.resizable(False, False)
         
         # Siyah tema
@@ -27,11 +31,17 @@ class PBazGoldHackGUI:
         self.is_logged_in = False
         self.api_url = "https://pointblank-market.onrender.com/api"  # Production
         
+        # Version sistemi
+        self.version = "1.0.0"
+        
         # Hack objesi
         self.hack = PBazGoldHack()
         
         # Ses sistemi
         self.init_sound()
+        
+        # Version kontrolü
+        self.check_version()
         
         # Login kontrolü
         self.check_login()
@@ -44,11 +54,78 @@ class PBazGoldHackGUI:
         except OSError:
             return False
     
+    def check_version(self):
+        """Versiyon kontrolü ve update"""
+        try:
+            print("DEBUG: Version check başlıyor...")
+            response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=5)
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"DEBUG: Version check response: {data}")
+                
+                if data.get('needsUpdate'):
+                    latest = data.get('latest', 'unknown')
+                    changelog = data.get('changelog', '')
+                    download_url = data.get('downloadUrl', '')
+                    
+                    print(f"DEBUG: Update gerekli! Latest: {latest}")
+                    
+                    # Update dialog göster
+                    result = messagebox.askyesno(
+                        "Güncelleme Mevcut!",
+                        f"Yeni versiyon mevcut: {latest}\n\n{changelog}\n\nGüncellemek ister misiniz?",
+                        icon='question'
+                    )
+                    
+                    if result:
+                        self.download_and_update(download_url)
+                else:
+                    print("DEBUG: Version güncel")
+            else:
+                print(f"DEBUG: Version check başarısız: {response.status_code}")
+        except Exception as e:
+            print(f"DEBUG: Version check hatası: {e}")
+    
+    def download_and_update(self, url):
+        """Yeni versiyonu indir ve güncelle"""
+        try:
+            print(f"DEBUG: İndirme başlıyor: {url}")
+            messagebox.showinfo("Güncelleme", "Güncelleme indiriliyor...")
+            
+            # İndirme
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            
+            # Temp dizin
+            temp_dir = tempfile.gettempdir()
+            exe_path = os.path.join(temp_dir, "pbazgold_hack_update.exe")
+            
+            with open(exe_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            
+            print(f"DEBUG: İndirme tamamlandı: {exe_path}")
+            
+            # Çalıştır ve kapat
+            messagebox.showinfo("Güncelleme", "Güncelleme indirildi. Program kapanıyor...")
+            
+            # Yeni exe'yi çalıştır
+            subprocess.Popen([exe_path])
+            
+            # Mevcut programı kapat
+            self.root.quit()
+            sys.exit(0)
+            
+        except Exception as e:
+            print(f"DEBUG: Update hatası: {e}")
+            messagebox.showerror("Hata", f"Güncelleme indirilemedi: {str(e)}")
+    
     def show_login_dialog(self):
         """Login dialog göster - ana pencerede"""
         # Ana pencereyi login moduna geçir
         self.root.title("🔐 PBazGold Login")
-        self.root.geometry("400x500")
+        self.root.geometry("500x500")
         
         # Tüm widget'ları temizle
         for widget in self.root.winfo_children():
@@ -301,7 +378,7 @@ class PBazGoldHackGUI:
         """GUI arayüzü oluştur"""
         # Ana pencereyi hack moduna geçir
         self.root.title("🎯 PBazGold Hack")
-        self.root.geometry("500x900")
+        self.root.geometry("500x500")
         
         # Tüm widget'ları temizle
         for widget in self.root.winfo_children():
