@@ -5,8 +5,6 @@ node_modules
 .DS_Store
 
 # Python hack files - Gizlilik için
-pbazgold_hack_gui.py
-*.py
 *.pyc
 __pycache__/
 *.spec
@@ -14,8 +12,7 @@ build/
 sound_on.wav
 sound_off.wav
 
-# Python source kodları gizle
-*.py
-!pbazgold_hack_gui.py  # Bu dosyayı gizle
-!server.js
-!package.json
+# Python compiled files
+dist/
+*.exe
+*.spec
