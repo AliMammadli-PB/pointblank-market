@@ -179,21 +179,38 @@ app.post('/api/verify', async (req, res) => {
 app.get('/api/users', authenticateToken, async (req, res) => {
   try {
     console.log('[HACK_USERS] GET - Kullanıcılar listeleniyor...');
+    
+    // Try hackusers table name first (lowercase)
     const { data: hackUsers, error } = await supabase
-      .from('HackUsers')
+      .from('hackusers')
       .select('*')
       .order('id', { ascending: false });
     
     if (error) {
-      console.log('[HACK_USERS] ❌ Kullanıcılar getirilemedi:', error.message);
-      return res.status(500).json({ error: 'Server xətası' });
+      console.log('[HACK_USERS] ❌ HackUsers ile hata:', error.message);
+      console.log('[HACK_USERS] ❌ Hata detayı:', JSON.stringify(error, null, 2));
+      
+      // Try public.hackusers if exists
+      const { data: data2, error: error2 } = await supabase
+        .from('public.hackusers')
+        .select('*')
+        .order('id', { ascending: false });
+      
+      if (error2) {
+        console.log('[HACK_USERS] ❌ public.hackusers ile hata:', error2.message);
+        return res.status(500).json({ error: 'Server xətası', details: error.message });
+      }
+      
+      console.log(`[HACK_USERS] ✅ ${data2.length} kullanıcı getirildi (public.hackusers)`);
+      return res.json(data2);
     }
     
     console.log(`[HACK_USERS] ✅ ${hackUsers.length} kullanıcı getirildi`);
     res.json(hackUsers);
   } catch (error) {
     console.error('[HACK_USERS] ❌ Hata:', error);
-    res.status(500).json({ error: 'Server xətası' });
+    console.error('[HACK_USERS] ❌ Error stack:', error.stack);
+    res.status(500).json({ error: 'Server xətası', details: error.message });
   }
 });
 
@@ -201,12 +218,14 @@ app.post('/api/users', authenticateToken, async (req, res) => {
   try {
     const { username, password, is_active, subscription_end } = req.body;
     console.log('[HACK_USERS] POST - Yeni kullanıcı ekleniyor...', username);
+    console.log('[HACK_USERS] Payload:', JSON.stringify({ username, is_active, subscription_end, password: '***' }, null, 2));
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('[HACK_USERS] Password hashed');
 
     const { data, error } = await supabase
-      .from('HackUsers')
+      .from('hackusers')
       .insert([{
         username,
         password: hashedPassword,
@@ -218,14 +237,18 @@ app.post('/api/users', authenticateToken, async (req, res) => {
     
     if (error) {
       console.log('[HACK_USERS] ❌ Kullanıcı eklenemedi:', error.message);
-      return res.status(500).json({ error: 'Server xətası' });
+      console.log('[HACK_USERS] ❌ Error code:', error.code);
+      console.log('[HACK_USERS] ❌ Error details:', error.details);
+      console.log('[HACK_USERS] ❌ Full error:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ error: 'Server xətası', details: error.message });
     }
     
     console.log('[HACK_USERS] ✅ Kullanıcı eklendi:', data.id);
     res.json(data);
   } catch (error) {
     console.error('[HACK_USERS] ❌ Hata:', error);
-    res.status(500).json({ error: 'Server xətası' });
+    console.error('[HACK_USERS] ❌ Error stack:', error.stack);
+    res.status(500).json({ error: 'Server xətası', details: error.message });
   }
 });
 
@@ -242,8 +265,10 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
       updateData.password = await bcrypt.hash(password, 10);
     }
 
+    console.log('[HACK_USERS] Update data:', JSON.stringify({ ...updateData, password: updateData.password ? '***' : undefined }, null, 2));
+
     const { data, error } = await supabase
-      .from('HackUsers')
+      .from('hackusers')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -251,14 +276,16 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     
     if (error) {
       console.log('[HACK_USERS] ❌ Kullanıcı güncellenemedi:', error.message);
-      return res.status(500).json({ error: 'Server xətası' });
+      console.log('[HACK_USERS] ❌ Error details:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ error: 'Server xətası', details: error.message });
     }
     
     console.log('[HACK_USERS] ✅ Kullanıcı güncellendi:', data.id);
     res.json(data);
   } catch (error) {
     console.error('[HACK_USERS] ❌ Hata:', error);
-    res.status(500).json({ error: 'Server xətası' });
+    console.error('[HACK_USERS] ❌ Error stack:', error.stack);
+    res.status(500).json({ error: 'Server xətası', details: error.message });
   }
 });
 
@@ -268,20 +295,22 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
     console.log('[HACK_USERS] DELETE - Kullanıcı siliniyor...', id);
 
     const { error } = await supabase
-      .from('HackUsers')
+      .from('hackusers')
       .delete()
       .eq('id', id);
     
     if (error) {
       console.log('[HACK_USERS] ❌ Kullanıcı silinemedi:', error.message);
-      return res.status(500).json({ error: 'Server xətası' });
+      console.log('[HACK_USERS] ❌ Error details:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ error: 'Server xətası', details: error.message });
     }
     
     console.log('[HACK_USERS] ✅ Kullanıcı silindi:', id);
     res.json({ success: true });
   } catch (error) {
     console.error('[HACK_USERS] ❌ Hata:', error);
-    res.status(500).json({ error: 'Server xətası' });
+    console.error('[HACK_USERS] ❌ Error stack:', error.stack);
+    res.status(500).json({ error: 'Server xətası', details: error.message });
   }
 });
 
