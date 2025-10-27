@@ -101,7 +101,8 @@ function HomePage() {
 
   const handleBackToHome = () => {
     console.log('[HOMEPAGE] Geri butonuna tıklandı, ana sayfaya dönülüyor')
-    navigate('/')
+    setView('home')
+    setLoading(false)
   }
 
   const getYoutubeEmbedUrl = (url: string) => {
