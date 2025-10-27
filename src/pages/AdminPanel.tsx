@@ -291,12 +291,33 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
     setHackUsersLoading(true)
     try {
       console.log('[ADMIN] Hack kullanıcıları yükleniyor...')
-      const response = await axios.get(`${API_URL}/api/users`, getAuthHeaders())
+      console.log('[ADMIN] API_URL:', API_URL)
+      console.log('[ADMIN] Endpoint:', `${API_URL}/api/users`)
+      console.log('[ADMIN] Token:', localStorage.getItem('token')?.substring(0, 30) + '...')
+      
+      const headers = getAuthHeaders()
+      console.log('[ADMIN] Headers:', JSON.stringify(headers, null, 2))
+      
+      const response = await axios.get(`${API_URL}/api/users`, headers)
+      
+      console.log('[ADMIN] Response status:', response.status)
+      console.log('[ADMIN] Response data:', JSON.stringify(response.data, null, 2))
       console.log('[ADMIN] ✅ Hack kullanıcıları yüklendi:', response.data.length, 'kullanıcı')
+      
       setHackUsers(response.data)
     } catch (error: any) {
-      console.error('[ADMIN] ❌ Hack users yükleme hatası:', error)
-      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
+      console.error('[ADMIN] ❌ Hack users yükleme hatası - FULL ERROR:', error)
+      console.error('[ADMIN] ❌ Error name:', error.name)
+      console.error('[ADMIN] ❌ Error message:', error.message)
+      console.error('[ADMIN] ❌ Error stack:', error.stack)
+      console.error('[ADMIN] ❌ Error response:', error.response)
+      console.error('[ADMIN] ❌ Response status:', error.response?.status)
+      console.error('[ADMIN] ❌ Response data:', JSON.stringify(error.response?.data, null, 2))
+      console.error('[ADMIN] ❌ Response headers:', error.response?.headers)
+      
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message
+      console.error('[ADMIN] ❌ Error message:', errorMsg)
+      
       if (error.response?.status === 401 || error.response?.status === 403) {
         alert('Oturum süresi doldu. Lütfen tekrar giriş yapın.')
         handleLogout()
@@ -320,25 +341,48 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       subscription_end: subscription_end.toISOString()
     }
 
+    console.log('[ADMIN] 📤 Hack kullanıcı kaydetme başlıyor...')
+    console.log('[ADMIN] Payload:', JSON.stringify(payload, null, 2))
+    console.log('[ADMIN] Editing user:', editingHackUser)
+    console.log('[ADMIN] API URL:', API_URL)
+
     try {
+      const headers = getAuthHeaders()
+      console.log('[ADMIN] Headers:', JSON.stringify(headers, null, 2))
+
       if (editingHackUser) {
-        await axios.put(
+        console.log('[ADMIN] PUT request gönderiliyor...')
+        console.log('[ADMIN] Endpoint:', `${API_URL}/api/users/${editingHackUser.id}`)
+        const response = await axios.put(
           `${API_URL}/api/users/${editingHackUser.id}`,
           payload,
-          getAuthHeaders()
+          headers
         )
+        console.log('[ADMIN] ✅ PUT response:', JSON.stringify(response.data, null, 2))
       } else {
-        await axios.post(`${API_URL}/api/users`, payload, getAuthHeaders())
+        console.log('[ADMIN] POST request gönderiliyor...')
+        console.log('[ADMIN] Endpoint:', `${API_URL}/api/users`)
+        const response = await axios.post(`${API_URL}/api/users`, payload, headers)
+        console.log('[ADMIN] ✅ POST response:', JSON.stringify(response.data, null, 2))
       }
 
+      console.log('[ADMIN] ✅ Hack kullanıcı başarıyla kaydedildi!')
       setHackFormData({ username: '', password: '', is_active: true, subscription_days: '30' })
       setShowHackForm(false)
       setEditingHackUser(null)
       loadHackUsers()
     } catch (error: any) {
-      console.error('[ADMIN] ❌ Hack kullanıcı kaydetme hatası:', error)
-      console.error('[ADMIN] ❌ Hata detayı:', error.response?.data || error.message)
-      const errorMsg = error.response?.data?.error || error.message
+      console.error('[ADMIN] ❌ Hack kullanıcı kaydetme hatası - FULL ERROR:', error)
+      console.error('[ADMIN] ❌ Error name:', error.name)
+      console.error('[ADMIN] ❌ Error message:', error.message)
+      console.error('[ADMIN] ❌ Error stack:', error.stack)
+      console.error('[ADMIN] ❌ Error response:', error.response)
+      console.error('[ADMIN] ❌ Response status:', error.response?.status)
+      console.error('[ADMIN] ❌ Response data:', JSON.stringify(error.response?.data, null, 2))
+      console.error('[ADMIN] ❌ Response headers:', error.response?.headers)
+      
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message
+      console.error('[ADMIN] ❌ Final error message:', errorMsg)
       alert(`Hack kullanıcı kaydetme hatası: ${errorMsg}`)
       
       if (error.response?.status === 401 || error.response?.status === 403) {
