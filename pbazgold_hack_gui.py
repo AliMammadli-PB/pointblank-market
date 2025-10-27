@@ -40,9 +40,6 @@ class PBazGoldHackGUI:
         # Ses sistemi
         self.init_sound()
         
-        # Version kontrolü
-        self.check_version()
-        
         # Login kontrolü
         self.check_login()
     
@@ -54,38 +51,7 @@ class PBazGoldHackGUI:
         except OSError:
             return False
     
-    def check_version(self):
-        """Versiyon kontrolü ve update"""
-        try:
-            print("DEBUG: Version check başlıyor...")
-            response = requests.get(f"{self.api_url}/hack-version?version={self.version}", timeout=5)
-            
-            if response.status_code == 200:
-                data = response.json()
-                print(f"DEBUG: Version check response: {data}")
-                
-                if data.get('needsUpdate'):
-                    latest = data.get('latest', 'unknown')
-                    changelog = data.get('changelog', '')
-                    download_url = data.get('downloadUrl', '')
-                    
-                    print(f"DEBUG: Update gerekli! Latest: {latest}")
-                    
-                    # Update dialog göster
-                    result = messagebox.askyesno(
-                        "Güncelleme Mevcut!",
-                        f"Yeni versiyon mevcut: {latest}\n\n{changelog}\n\nGüncellemek ister misiniz?",
-                        icon='question'
-                    )
-                    
-                    if result:
-                        self.download_and_update(download_url)
-                else:
-                    print("DEBUG: Version güncel")
-            else:
-                print(f"DEBUG: Version check başarısız: {response.status_code}")
-        except Exception as e:
-            print(f"DEBUG: Version check hatası: {e}")
+    # Removed auto-check on startup - only manual update via button
     
     def check_update_status(self):
         """Update durumunu kontrol et ve göster"""
