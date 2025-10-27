@@ -282,13 +282,6 @@ del /f /q "%0"
         
         self.username_entry.bind('<Return>', on_enter)
         self.password_entry.bind('<Return>', on_enter)
-        
-        # Test bilgileri
-        test_label = tk.Label(main_frame, 
-                             text="Test: admin/admin123 (Aktif)\nTest: user/user123 (Pasif)", 
-                             font=("Arial", 9), 
-                             fg='gray', bg='black')
-        test_label.pack()
     
     def login(self):
         """Login işlemi"""
@@ -517,15 +510,13 @@ del /f /q "%0"
         
         # Update butonu (sağa hizalı)
         update_button = tk.Button(top_frame, 
-                                text="🔄", 
-                                font=("Arial", 14, "bold"), 
+                                text="Güncelle", 
+                                font=("Arial", 10, "bold"), 
                                 bg='#3498db', 
                                 fg='white',
                                 activebackground='#2980b9',
                                 activeforeground='white',
                                 relief='flat',
-                                width=4,
-                                height=1,
                                 cursor='hand2',
                                 command=self.manual_check_update)
         update_button.pack(side=tk.RIGHT)
