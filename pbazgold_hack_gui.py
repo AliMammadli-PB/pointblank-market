@@ -497,12 +497,38 @@ del /f /q "%0"
                              fg='white', bg='black')
         title_label.pack(pady=(0, 20))
         
-        # Kullanıcı bilgisi
-        user_info = tk.Label(main_frame, 
+        # Üst frame (sağa hizalanacak)
+        top_frame = tk.Frame(main_frame, bg='black')
+        top_frame.pack(fill=tk.X, pady=(0, 30))
+        
+        # Kullanıcı bilgisi (sola hizalı)
+        user_info = tk.Label(top_frame, 
                             text=f"👤 {self.current_user.get('username', 'Kullanıcı')}", 
                             font=("Arial", 12), 
                             fg='#3498db', bg='black')
-        user_info.pack(pady=(0, 30))
+        user_info.pack(side=tk.LEFT)
+        
+        # Update bilgisi (sola hizalı)
+        self.update_info_label = tk.Label(top_frame, 
+                                         text="", 
+                                         font=("Arial", 10, "bold"), 
+                                         fg='#2ecc71', bg='black')
+        self.update_info_label.pack(side=tk.LEFT, padx=(20, 0))
+        
+        # Update butonu (sağa hizalı)
+        update_button = tk.Button(top_frame, 
+                                text="🔄", 
+                                font=("Arial", 14, "bold"), 
+                                bg='#3498db', 
+                                fg='white',
+                                activebackground='#2980b9',
+                                activeforeground='white',
+                                relief='flat',
+                                width=4,
+                                height=1,
+                                cursor='hand2',
+                                command=self.manual_check_update)
+        update_button.pack(side=tk.RIGHT)
         
         # Sekmeme durumu - büyük ve kalın
         self.sekmeme_label = tk.Label(main_frame, text="Sekmeme", 
@@ -555,29 +581,7 @@ del /f /q "%0"
                                    text="Kırmızı: Deaktif | Yeşil: Aktif", 
                                    font=("Arial", 9), 
                                    fg='gray', bg='black')
-        self.status_label.pack(pady=(0, 20))
-        
-        # Update bilgisi
-        self.update_info_label = tk.Label(main_frame, 
-                                         text="", 
-                                         font=("Arial", 10, "bold"), 
-                                         fg='#2ecc71', bg='black')
-        self.update_info_label.pack(pady=(0, 10))
-        
-        # Update butonu
-        update_button = tk.Button(main_frame, 
-                                text="🔄 Güncellemeleri Kontrol Et", 
-                                font=("Arial", 11, "bold"), 
-                                bg='#3498db', 
-                                fg='white',
-                                activebackground='#2980b9',
-                                activeforeground='white',
-                                relief='flat',
-                                padx=20,
-                                pady=10,
-                                cursor='hand2',
-                                command=self.manual_check_update)
-        update_button.pack(pady=(0, 20))
+        self.status_label.pack()
         
         # Abonelik süresini güncelle
         self.update_subscription_time()
