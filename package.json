@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "PointBlank Market - Full Stack Application",
   "type": "module",
+  "engines": {
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "server:dev": "nodemon server.js",
