@@ -808,25 +808,7 @@ del /f /q "%0"
         user_frame = tk.Frame(header, bg=self.bg_color)
         user_frame.pack(side=tk.RIGHT, padx=20)
         
-        # Check Update button in header
-        self.header_check_btn = tk.Button(
-            user_frame,
-            text="Güncelle",
-            font=("Segoe UI", 9, "bold"),
-            bg='#2a2a3e',
-            fg=self.accent_color,
-            activebackground='#2a2a3e',
-            activeforeground='#00cc6f',
-            relief='flat',
-            borderwidth=1,
-            highlightthickness=1,
-            highlightbackground='#3a3a4e',
-            cursor='hand2',
-            command=self.manual_check_update,
-            padx=15,
-            pady=5
-        )
-        self.header_check_btn.pack(side=tk.TOP, pady=(0, 5))
+        # Check Update button in header - REMOVED
         
         user_label = tk.Label(
             user_frame,
