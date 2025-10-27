@@ -299,8 +299,8 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       setBitSuccess(true)
       setTimeout(() => setBitSuccess(false), 3000)
     } catch (error) {
-      console.error('[ADMIN] ❌ Bit linki ekleme hatası:', error)
-      alert('Bit linki eklenemedi!')
+      console.error('[ADMIN] ❌ Hack linki ekleme hatası:', error)
+      alert('Hack linki eklenemedi!')
     }
 
     setBitLoading(false)
@@ -325,8 +325,8 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
       setBitSuccess(true)
       setTimeout(() => setBitSuccess(false), 3000)
     } catch (error) {
-      console.error('[ADMIN] ❌ Bit linki silme hatası:', error)
-      alert('Bit linki silinemedi!')
+      console.error('[ADMIN] ❌ Hack linki silme hatası:', error)
+      alert('Hack linki silinemedi!')
     }
 
     setBitLoading(false)
@@ -404,7 +404,7 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            🎮 Bit Download
+            🎮 Hack Download
           </button>
         </div>
 
@@ -724,11 +724,11 @@ function AdminPanel({ setIsAuthenticated }: AdminPanelProps) {
         {activeTab === 'bit' && (
           <div className="max-w-4xl mx-auto">
             <div className="bg-gray-800/50 border-2 border-green-500/50 rounded-xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">🎮 Bit Download Links</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">🎮 Hack Download Links</h2>
 
               {bitSuccess && (
                 <div className="mb-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-400 text-sm">
-                  Bit linkler başarıyla güncellendi!
+                  Hack linkler başarıyla güncellendi!
                 </div>
               )}
 

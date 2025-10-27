@@ -246,7 +246,7 @@ function HomePage() {
                 <p className="text-gray-400 text-sm">{t('home.accountsDesc')}</p>
               </button>
 
-              {/* Bit */}
+              {/* Hack */}
               <button
                 onClick={() => {
                   setView('bit')
@@ -257,7 +257,7 @@ function HomePage() {
                 <div className="mb-4 text-green-400 group-hover:scale-110 transition-transform inline-block">
                   <Download size={40} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{t('home.bitTitle')}</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">Hack</h3>
                 <p className="text-gray-400 text-sm">{t('home.bitDesc')}</p>
               </button>
             </div>
