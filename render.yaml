@@ -3,7 +3,7 @@ services:
     name: pointblank-market
     env: node
     plan: starter
-    buildCommand: npm install --production=false && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
