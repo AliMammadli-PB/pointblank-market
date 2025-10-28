@@ -196,6 +196,28 @@ app.post('/api/login', async (req, res) => {
       console.log(`[HACK_LOGIN] ❌ Şifre yanlış - Kullanıcı: ${username}`);
       return res.json({ success: false, message: 'Şifrə yanlışdır' });
     }
+    
+    // Public IP kontrolü
+    if (hackUser.public_ip) {
+      const clientIp = req.ip || req.socket.remoteAddress;
+      // req.headers['x-forwarded-for'] can contain comma-separated IPs
+      const forwardedFor = req.headers['x-forwarded-for'];
+      const actualClientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : clientIp;
+      
+      console.log(`[HACK_LOGIN] Public IP kontrolü yapılıyor...`);
+      console.log(`[HACK_LOGIN] Beklenen IP: ${hackUser.public_ip}`);
+      console.log(`[HACK_LOGIN] Gelen IP: ${actualClientIp}`);
+      
+      if (actualClientIp !== hackUser.public_ip && clientIp !== hackUser.public_ip) {
+        console.log(`[HACK_LOGIN] ❌ IP eşleşmiyor - Kullanıcı: ${username}`);
+        return res.json({ 
+          success: false, 
+          message: 'Bu hesap başka bir IP adresinden kullanılıyor. Yalnızca 1 kişi bağlanabilir! Support ile iletişime geçin.' 
+        });
+      }
+      
+      console.log(`[HACK_LOGIN] ✅ IP doğrulandı`);
+    }
 
     const token = jwt.sign({ id: hackUser.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     console.log(`[HACK_LOGIN] ✅ Login başarılı - Kullanıcı: ${username}`);
@@ -339,9 +361,9 @@ app.get('/api/users', authenticateToken, async (req, res) => {
 
 app.post('/api/users', authenticateToken, async (req, res) => {
   try {
-    const { username, password, is_active, subscription_end } = req.body;
+    const { username, password, is_active, subscription_end, public_ip } = req.body;
     console.log('[HACK_USERS] POST - Yeni kullanıcı ekleniyor...', username);
-    console.log('[HACK_USERS] Payload:', JSON.stringify({ username, is_active, subscription_end, password: '***' }, null, 2));
+    console.log('[HACK_USERS] Payload:', JSON.stringify({ username, is_active, subscription_end, password: '***', public_ip }, null, 2));
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -353,7 +375,8 @@ app.post('/api/users', authenticateToken, async (req, res) => {
         username,
         password: hashedPassword,
         is_active,
-        subscription_end
+        subscription_end,
+        public_ip: public_ip || null
       }])
       .select()
       .single();
@@ -378,7 +401,7 @@ app.post('/api/users', authenticateToken, async (req, res) => {
 app.put('/api/users/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, password, is_active, subscription_end } = req.body;
+    const { username, password, is_active, subscription_end, public_ip } = req.body;
     console.log('[HACK_USERS] PUT - Kullanıcı güncelleniyor...', id);
 
     const updateData = { username, is_active, subscription_end };
@@ -386,6 +409,11 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     // Only update password if provided
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
+    }
+    
+    // Update public IP if provided
+    if (public_ip !== undefined) {
+      updateData.public_ip = public_ip || null;
     }
 
     console.log('[HACK_USERS] Update data:', JSON.stringify({ ...updateData, password: updateData.password ? '***' : undefined }, null, 2));
