@@ -123,12 +123,33 @@ function HackAdminPanel() {
   }
 
   const handleDeleteHackUser = async (id: number) => {
-    if (!confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) return
+    console.log('[HACK_ADMIN] 🔴 Sil butonuna tıklandı - ID:', id)
+    console.log('[HACK_ADMIN] ID tipi:', typeof id)
+    console.log('[HACK_ADMIN] API URL:', `${API_URL}/api/users/${id}`)
+    
+    if (!confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+      console.log('[HACK_ADMIN] ❌ Silme iptal edildi (kullanıcı reddetti)')
+      return
+    }
 
     try {
-      await axios.delete(`${API_URL}/api/users/${id}`, getAuthHeaders())
-      loadHackUsers()
+      console.log('[HACK_ADMIN] 📤 DELETE request gönderiliyor...')
+      console.log('[HACK_ADMIN] Headers:', getAuthHeaders())
+      
+      const response = await axios.delete(`${API_URL}/api/users/${id}`, getAuthHeaders())
+      
+      console.log('[HACK_ADMIN] ✅ DELETE response:', response.status)
+      console.log('[HACK_ADMIN] Response data:', response.data)
+      
+      console.log('[HACK_ADMIN] 🔄 Kullanıcılar yeniden yükleniyor...')
+      await loadHackUsers()
+      console.log('[HACK_ADMIN] ✅ Kullanıcılar yeniden yüklendi')
     } catch (error: any) {
+      console.error('[HACK_ADMIN] ❌ Silme hatası:', error)
+      console.error('[HACK_ADMIN] ❌ Error response:', error.response)
+      console.error('[HACK_ADMIN] ❌ Error status:', error.response?.status)
+      console.error('[HACK_ADMIN] ❌ Error data:', error.response?.data)
+      
       alert(`Kullanıcı silme hatası: ${error.response?.data?.error || error.message}`)
       
       if (error.response?.status === 401 || error.response?.status === 403) {
