@@ -416,11 +416,33 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     console.log('[HACK_USERS] DELETE - Kullanıcı siliniyor...', id);
+    console.log('[HACK_USERS] ID (raw):', id);
+    console.log('[HACK_USERS] ID (parsed):', parseInt(id));
 
-    const { error } = await supabase
+    // First, check if user exists
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('hackusers')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
+    
+    console.log('[HACK_USERS] Existing user:', existingUser);
+    console.log('[HACK_USERS] Fetch error:', fetchError);
+
+    if (!existingUser && fetchError?.code !== 'PGRST116') {
+      console.log('[HACK_USERS] ❌ Kullanıcı bulunamadı:', id);
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
+    }
+
+    // Now delete
+    const { data: deletedData, error } = await supabase
       .from('hackusers')
       .delete()
-      .eq('id', parseInt(id));
+      .eq('id', parseInt(id))
+      .select();
+    
+    console.log('[HACK_USERS] Deleted data:', deletedData);
+    console.log('[HACK_USERS] Delete error:', error);
     
     if (error) {
       console.log('[HACK_USERS] ❌ Kullanıcı silinemedi:', error.message);
@@ -429,7 +451,8 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
     }
     
     console.log('[HACK_USERS] ✅ Kullanıcı silindi:', id);
-    res.json({ success: true });
+    console.log('[HACK_USERS] Silinen veri:', JSON.stringify(deletedData, null, 2));
+    res.json({ success: true, deleted: deletedData });
   } catch (error) {
     console.error('[HACK_USERS] ❌ Hata:', error);
     console.error('[HACK_USERS] ❌ Error stack:', error.stack);
