@@ -71,6 +71,31 @@ class PBazGoldHackGUI:
         except OSError:
             return False
     
+    def get_public_ip(self):
+        """Public IP adresini al"""
+        try:
+            # En hızlı servis olan ipify kullanılıyor
+            response = requests.get('https://api.ipify.org', timeout=5)
+            if response.status_code == 200:
+                ip = response.text.strip()
+                print(f"DEBUG: Public IP: {ip}")
+                return ip
+            else:
+                print("DEBUG: IP alınamadı - ipify başarısız")
+                return None
+        except Exception as e:
+            print(f"DEBUG: Public IP alma hatası: {e}")
+            # Yedek servisler dene
+            try:
+                response = requests.get('https://icanhazip.com', timeout=5)
+                if response.status_code == 200:
+                    ip = response.text.strip()
+                    print(f"DEBUG: Public IP (yahoo): {ip}")
+                    return ip
+            except:
+                pass
+            return None
+    
     # Removed auto-check on startup - only manual update via button
     
     def check_update_status(self):
@@ -529,10 +554,23 @@ del /f /q "%0"
             return
         
         print("DEBUG: Internet connection OK")
+        
+        # Public IP al
+        print("DEBUG: Public IP alınıyor...")
+        self.status_label.config(text="IP adresi alınıyor...", fg='yellow')
+        self.root.update()
+        
+        public_ip = self.get_public_ip()
+        if not public_ip:
+            self.status_label.config(text="❌ IP adresi alınamadı!", fg='red')
+            return
+        
+        print(f"DEBUG: Public IP obtained: {public_ip}")
+        
         self.status_label.config(text="Giriş yapılıyor...", fg='yellow')
         self.root.update()
         
-        # API'ye login isteği
+        # API'ye login isteği - IP ile birlikte
         try:
             print(f"DEBUG: ========================================")
             print(f"DEBUG: LOGIN REQUEST DETAILS")
@@ -541,11 +579,12 @@ del /f /q "%0"
             print(f"DEBUG: Full endpoint: {self.api_url}/login")
             print(f"DEBUG: Username: {username}")
             print(f"DEBUG: Password length: {len(password)}")
-            print(f"DEBUG: Request payload: {{'username': '{username}', 'password': '***'}}")
+            print(f"DEBUG: Public IP: {public_ip}")
+            print(f"DEBUG: Request payload: {{'username': '{username}', 'password': '***', 'public_ip': '{public_ip}'}}")
             print(f"DEBUG: ========================================")
             
             response = requests.post(f"{self.api_url}/login", 
-                                   json={"username": username, "password": password},
+                                   json={"username": username, "password": password, "public_ip": public_ip},
                                    timeout=10)
             
             print(f"DEBUG: ========================================")

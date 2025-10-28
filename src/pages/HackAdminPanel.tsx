@@ -26,8 +26,7 @@ function HackAdminPanel() {
     username: '',
     password: '',
     is_active: true,
-    subscription_days: '30',
-    public_ip: ''
+    subscription_days: '30'
   })
 
   useEffect(() => {
@@ -75,8 +74,7 @@ function HackAdminPanel() {
       username: hackFormData.username,
       password: hackFormData.password,
       is_active: hackFormData.is_active,
-      subscription_end: subscription_end.toISOString(),
-      public_ip: hackFormData.public_ip || null
+      subscription_end: subscription_end.toISOString()
     }
 
     console.log('[HACK_ADMIN] 📤 Hack kullanıcı kaydetme başlıyor...')
@@ -98,7 +96,7 @@ function HackAdminPanel() {
       }
 
       console.log('[HACK_ADMIN] ✅ Hack kullanıcı başarıyla kaydedildi!')
-      setHackFormData({ username: '', password: '', is_active: true, subscription_days: '30', public_ip: '' })
+      setHackFormData({ username: '', password: '', is_active: true, subscription_days: '30' })
       setShowHackForm(false)
       setEditingHackUser(null)
       loadHackUsers()
@@ -120,8 +118,7 @@ function HackAdminPanel() {
       username: user.username,
       password: '', // Don't set password when editing
       is_active: user.is_active,
-      subscription_days: days.toString(),
-      public_ip: user.public_ip || ''
+      subscription_days: days.toString()
     })
     setShowHackForm(true)
   }
@@ -166,7 +163,7 @@ function HackAdminPanel() {
   const cancelHackForm = () => {
     setShowHackForm(false)
     setEditingHackUser(null)
-    setHackFormData({ username: '', password: '', is_active: true, subscription_days: '30', public_ip: '' })
+    setHackFormData({ username: '', password: '', is_active: true, subscription_days: '30' })
   }
 
   const formatRemainingTime = (subscription_end: string | null) => {
@@ -286,18 +283,6 @@ function HackAdminPanel() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-gray-300 mb-2">Public IP (Opsiyonel - Boş bırakabilirsiniz)</label>
-                  <input
-                    type="text"
-                    value={hackFormData.public_ip}
-                    onChange={(e) => setHackFormData({ ...hackFormData, public_ip: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:border-red-500 focus:outline-none transition-colors"
-                    placeholder="Örn: 192.168.1.1"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">IP girin: kullanıcı sadece bu IP'den bağlanabilecek</p>
-                </div>
-
                 <div className="flex gap-4">
                   <button
                     type="submit"
@@ -362,13 +347,13 @@ function HackAdminPanel() {
                             {new Date(user.created_at).toLocaleDateString('tr-TR')}
                           </span>
                         </div>
-                      </div>
-                      {user.public_ip && (
-                        <div className="mt-2">
-                          <span className="text-gray-400">Public IP:</span>
-                          <span className="ml-2 text-white font-mono">{user.public_ip}</span>
+                        <div>
+                          <span className="text-gray-400">IP Adresi:</span>
+                          <span className="ml-2 text-white font-mono text-xs">
+                            {user.public_ip || 'Henüz atanmadı'}
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
                     
                     <div className="flex gap-2">
