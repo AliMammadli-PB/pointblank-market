@@ -388,6 +388,11 @@ function HomePage() {
                 <div className="bg-white/5 rounded-lg p-6 mb-6">
                   <h3 className="text-xl font-semibold text-white mb-2">{t('bit.gameName')}</h3>
                   <p className="text-gray-400">{t('bit.description')}</p>
+                  <div className="mt-4 flex items-center gap-2 text-green-400">
+                    <span className="font-bold text-2xl">20</span>
+                    <span className="text-lg font-semibold">₼</span>
+                    <span className="text-sm text-gray-400">aylık</span>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -411,19 +416,31 @@ function HomePage() {
                     {t('bit.download')}
                   </button>
 
-                  <button
-                    onClick={() => {
-                      const message = `*${t('bit.purchaseRequest')}*\n\n` +
-                        `*Oyun:* PBAZGOLD\n` +
-                        `*İstifadəçi kodu:* ${t('bit.requestingCode')}`
-                      const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
-                      window.open(whatsappUrl, '_blank')
-                    }}
-                    className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Wallet size={24} />
-                    {t('bit.buy')}
-                  </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      onClick={() => {
+                        const message = `*Hack almaq istəyirəm*\n\nMəlumat verin zəhmət olmasa\n\n💳 Satın almaq istəyirəm`
+                        const whatsappUrl = `https://wa.me/79271031033?text=${encodeURIComponent(message)}`
+                        window.open(whatsappUrl, '_blank')
+                      }}
+                      className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
+                    >
+                      <Wallet size={24} />
+                      WhatsApp 1
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        const message = `*Hack almaq istəyirəm*\n\nMəlumat verin zəhmət olmasa\n\n💳 Satın almaq istəyirəm`
+                        const whatsappUrl = `https://wa.me/994708256301?text=${encodeURIComponent(message)}`
+                        window.open(whatsappUrl, '_blank')
+                      }}
+                      className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors"
+                    >
+                      <Wallet size={24} />
+                      WhatsApp 2
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
